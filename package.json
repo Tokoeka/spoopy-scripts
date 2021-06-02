@@ -1,7 +1,7 @@
 {
-  "name": "kol-js-starter",
+  "name": "spoopy-scripts",
   "version": "1.0.0",
-  "description": "Example package for KoLmafia TypeScript scripts.",
+  "description": "Hooray for hallowe'en",
   "main": "KoLmafia/scripts/kol-js-starter/main-script-name.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -25,15 +25,13 @@
     "webpack-cli": "^4.2.0"
   },
   "dependencies": {
-    "kolmafia": "^1.0.2",
-    "libram": "^0.0.5"
+    "@babel/compat-data": "7.12.7",
+    "kolmafia": "^1.0.11",
+    "libram": "^0.0.8"
   },
-  "author": "Captain Scotch",
+  "author": "Phreddrickkv2",
   "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/docrostov/kol-js-starter.git"
-  },
+  "repository": "git:https://github.com/horrible-little-slime/spoopy-scripts",
   "keywords": [
     "KoLMafia",
     "JS",

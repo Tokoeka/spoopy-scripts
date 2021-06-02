@@ -1,13 +1,98 @@
-import { myMp, print } from "kolmafia";
+import { setupMaster } from "cluster";
+import {
+  buy,
+  effectModifier,
+  equip,
+  familiarWeight,
+  mallPrice,
+  myFamiliar,
+  numericModifier,
+  outfit,
+  use,
+  useFamiliar,
+  weightAdjustment,
+} from "kolmafia";
+import { $familiar, $slot, $item, have } from "libram";
 
-export function checkMP() {
-  if (myMp() < 200) {
-    return "Your MP is less than 200.";
-  } else {
-    return "Your MP is greater than or equal to 200.";
+interface weightBuff {
+  item: Item;
+  effect: Effect;
+  value: number;
+  price: number;
+  efficiency: number;
+}
+const weightBuffs = Item.all()
+  .filter((item) => {
+    return numericModifier(effectModifier(item, "Effect"), "Familiar Weight") > 0;
+  })
+  .map((buffItem) => {
+    return {
+      item: buffItem,
+      effect: effectModifier(buffItem, "Effect"),
+      value: numericModifier(effectModifier(buffItem, "Effect"), "Familiar Weight"),
+      price: mallPrice(buffItem) / numericModifier(buffItem, "Effect Duration"),
+      efficiency:
+        (numericModifier(effectModifier(buffItem, "Effect"), "Familiar Weight") *
+          numericModifier(buffItem, "Effect Duration")) /
+        mallPrice(buffItem),
+    };
+  })
+  .sort((a, b) => a.efficiency - b.efficiency);
+
+const mpa =
+  (1 / 25) * mallPrice($item`huge bowl of candy`) + 0.4 * mallPrice($item`chocolate saucepan`);
+
+useFamiliar($familiar`reagnimated gnome`);
+equip($slot`familiar`, $item`Gnomish housemaid's kgnee`);
+outfit("Trick");
+
+const baseWeight = familiarWeight(myFamiliar()) + weightAdjustment();
+const permanentWeightBuffs: weightBuff[] = [];
+const weight = () =>
+  baseWeight + permanentWeightBuffs.map((buff) => buff.value).reduce((a, b) => a + b, 0);
+
+function testPermanentBuff(buff: weightBuff) {
+  const mpaCalc = (plusWeight: number, weightPrice: number) =>
+    (mpa -
+      weightPrice -
+      permanentWeightBuffs.map((buff) => buff.price).reduce((a, b) => a + b, 0)) /
+    (1 - (weight() + plusWeight) / 1000);
+  return mpaCalc(buff.value, buff.price) - mpaCalc(0, 0) > 0;
+}
+
+weightBuffs.forEach((weightBuff) => {
+  if (!have(weightBuff.effect)) {
+    if (testPermanentBuff(weightBuff)) {
+      const toBuy = Math.ceil(1000 / numericModifier(weightBuff.item, "Effect Duration"));
+      const equilibriumPrice =
+        -1 *
+        (((mpa - permanentWeightBuffs.map((buff) => buff.price).reduce((a, b) => a + b, 0)) *
+          (1 - (weight() + weightBuff.value) / 1000)) /
+          (1 - weight() / 1000) +
+          permanentWeightBuffs.map((buff) => buff.price).reduce((a, b) => a + b, 0) -
+          mpa);
+      const bought = buy(weightBuff.item, toBuy, equilibriumPrice);
+      use(bought, weightBuff.item);
+      if (bought === toBuy) {
+        permanentWeightBuffs.push(weightBuff);
+      }
+    }
   }
-}
+});
 
-export function main() {
-  print(checkMP());
-}
+const trueMpa =
+  (mpa - permanentWeightBuffs.map((buff) => buff.price).reduce((a, b) => a + b, 0)) /
+  (1 - weight() / 1000);
+
+const turnZeroFreeFights = 10 + 20 + 20 + 50 + 10 + 2 + 2 + 6 + 10 + 6 + 6 + 6 + 2 + 2 + 2;
+/* snojo + NEP + bricko + drunks + witchess + fax + chateau + lynyrd + glark +
+shatteringpunch + xray + batoomerang + mob hit + jokester + tentacles
+kramco intentionally omitted for thesis*/
+
+weightBuffs.forEach((weightBuff) => {
+  if (!have(weightBuff.effect)) {
+    if (buy(weightBuff.item, 1, (trueMpa * weightBuff.value * turnZeroFreeFights) / 1000)) {
+      use(1, weightBuff.item);
+    }
+  }
+});
