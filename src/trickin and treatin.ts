@@ -1,16 +1,20 @@
 import {
+    buy,
     equip,
     getCounters,
     handlingChoice,
+    haveEffect,
     haveFamiliar,
     inMultiFight,
     myAdventures,
     myFamiliar,
+    numericModifier,
     outfit,
     print,
     runChoice,
     runCombat,
     totalTurnsPlayed,
+    use,
     useFamiliar,
     useSkill,
     visitUrl,
@@ -29,6 +33,7 @@ import {
     set,
     SourceTerminal,
 } from "libram";
+import { weightBuff } from "./buffing";
 import { advMacro, advMacroAA, pickBjorn, prepWandererZone } from "./lib";
 
 const stasisFamiliars = $familiars`stocking mimic, ninja pirate zombie robot, comma chameleon, feather boa constrictor`;
@@ -117,7 +122,7 @@ function freeFight(macro: Macro, condition?: () => boolean, prep?: () => void) {
     advMacroAA(prepWandererZone(), macro, condition);
 }
 
-export function runBlocks(blocks?: number) {
+export function runBlocks(blocks: number = -1, gnomeBuffs?: Map<weightBuff, number>) {
     const terminal = SourceTerminal.have();
 
     const kramco = $item`Kramco Sausage-o-Matic™`;
@@ -155,10 +160,25 @@ export function runBlocks(blocks?: number) {
               .repeat();
 
     let n = 0;
-    const condition = () => (blocks ? n < blocks : myAdventures() >= 5);
+    const condition = () => (blocks >= 0 ? n < blocks : myAdventures() >= 5);
 
     while (condition()) {
         useFamiliar(trickFamiliar);
+
+        if (gnomeBuffs) {
+            gnomeBuffs.forEach((price, weightBuff) => {
+                if (haveEffect(weightBuff.effect) < 5) {
+                    const needed = Math.ceil(
+                        5 / numericModifier(weightBuff.item, "Effect Duration")
+                    );
+                    const bought = buy(weightBuff.item, needed, price);
+                    use(bought, weightBuff.item);
+                    if (bought !== needed) {
+                        gnomeBuffs.delete(weightBuff);
+                    }
+                }
+            });
+        }
         const digitizes = get("_sourceTerminalDigitizeUses");
         const sausages = get("_sausageFights");
         const votes = get("_voteFreeFights");

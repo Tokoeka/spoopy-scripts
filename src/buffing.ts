@@ -12,15 +12,14 @@ import {
     weightAdjustment,
 } from "kolmafia";
 import { $familiar, $slot, $item, have } from "libram";
-
+export interface weightBuff {
+    item: Item;
+    effect: Effect;
+    value: number;
+    price: number;
+    efficiency: number;
+}
 export function buffUp(turnZero: boolean = false) {
-    interface weightBuff {
-        item: Item;
-        effect: Effect;
-        value: number;
-        price: number;
-        efficiency: number;
-    }
     const weightBuffs = Item.all()
         .filter((item) => {
             return numericModifier(effectModifier(item, "Effect"), "Familiar Weight") > 0;
@@ -61,6 +60,8 @@ export function buffUp(turnZero: boolean = false) {
         return mpaCalc(buff.value, buff.price) - mpaCalc(0, 0) > 0;
     }
 
+    const prices: Map<weightBuff, number> = new Map<weightBuff, number>();
+
     weightBuffs.forEach((weightBuff) => {
         if (!have(weightBuff.effect)) {
             if (testPermanentBuff(weightBuff)) {
@@ -77,6 +78,7 @@ export function buffUp(turnZero: boolean = false) {
                 use(bought, weightBuff.item);
                 if (bought === toBuy) {
                     permanentWeightBuffs.push(weightBuff);
+                    prices.set(weightBuff, equilibriumPrice);
                 }
             }
         }
@@ -105,5 +107,5 @@ export function buffUp(turnZero: boolean = false) {
             }
         });
     }
-    return permanentWeightBuffs;
+    return prices;
 }
