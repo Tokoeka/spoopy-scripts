@@ -1,5 +1,5 @@
-import { equip, outfit, useFamiliar } from "kolmafia";
-import { $familiar, $item, $slot, have } from "libram";
+import { equip, myClass, outfit, useFamiliar } from "kolmafia";
+import { $class, $familiar, $item, $slot, have, set } from "libram";
 import { buffUp } from "./buffing";
 import { runBlocks } from "./trickin and treatin";
 
@@ -7,7 +7,42 @@ function prepBlocks() {
     useFamiliar($familiar`reagnimated gnome`);
     if (!have($item`gnomish housemaid's kgnee`)) throw "Gotta get that knee";
     equip($slot`familiar`, $item`gnomish housemadi's kgnee`);
-    outfit("legendary regalia of the saucemaestro");
+    if (
+        !have($item`Sledgehammer of the Vælkyr`) &&
+        !have($item`Flail of the Seven Aspects`) &&
+        !have($item`Wrath of the Capsaician Pastalords`) &&
+        !have($item`Windsor Pan of the Source`) &&
+        !have($item`Seeger's Unstoppable Banjo`) &&
+        !have($item`The Trickster's Trikitixa`)
+    ) {
+        set("spoopTreatOutfit", "Hodgeman's Regal Frippery");
+    } else {
+        switch (myClass()) {
+            case $class`seal clubber`:
+                set("spoopTreatOutfit", "Legendary Regalia of the Seal Crusher");
+                break;
+
+            case $class`turtle tamer`:
+                set("spoopTreatOutfit", "Legendary Regalia of the Chelonian Overlord");
+                break;
+
+            case $class`sauceror`:
+                set("spoopTreatOutfit", "Legendary Regalia of the Saucemaestro");
+                break;
+
+            case $class`pastamancer`:
+                set("spoopTreatOutfit", "Legendary Regalia of the Pasta Master");
+                break;
+
+            case $class`disco bandit`:
+                set("spoopTreatOutfit", "Legendary Regalia of the Groovelord");
+                break;
+
+            case $class`accordion thief`:
+                set("spoopTreatOutfit", "Legendary Regalia of the Master Squeezeboxer");
+                break;
+        }
+    }
 }
 
 export function main(args: string) {
