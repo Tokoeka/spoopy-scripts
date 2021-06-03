@@ -54,7 +54,12 @@ import {
 import { get, getString, set } from "libram/dist/property";
 import { advMacroAA, funBuddyNames, getRandFromArray, pickBjorn, prepWandererZone } from "./lib";
 
-const freeFightCount = 103; //20 NEP, 10 Witchess, 2 Chateau/Kramco, 10 BRICKO, 25 pygmies, 20 freekills, 11 backup, 3 snare, 2 lone tentacles
+const defaultMacro = Macro.skill("curse of weaksauce")
+    .skill("micrometeor")
+    .skill("sing along")
+    .skill("extract")
+    .attack()
+    .repeat();
 
 function multiFightAutoAttack() {
     while (choiceFollowsFight() || inMultiFight()) {
@@ -78,54 +83,6 @@ while (get("_sourceTerminalEnhanceUses") < 3) {
 }
 while (get("_kgbClicksUsed") >= 3) {
     cliExecute("briefcase buff meat");
-}
-
-function inClan<T>(clanName: string, action: () => T) {
-    clanName = clanName.toLowerCase();
-    const startingClanName = getClanName().toLowerCase();
-    if (startingClanName !== clanName) cliExecute("/whitelist " + clanName);
-    if (getClanName().toLowerCase() !== clanName) {
-        throw `Failed to move to clan ${clanName} (currently in ${getClanName()})`;
-    }
-    try {
-        return action();
-    } finally {
-        if (startingClanName !== clanName) cliExecute("/whitelist " + startingClanName);
-    }
-}
-
-function withStash<T>(itemsToTake: Item[], action: () => T) {
-    if (itemsToTake.every((item) => availableAmount(item) > 0)) return action();
-
-    const stashClanName = "Alliance From Heck";
-
-    return inClan(stashClanName, () => {
-        const quantitiesTaken = new Map<Item, number>();
-        try {
-            for (const item of itemsToTake) {
-                if (getClanName() !== stashClanName)
-                    throw "Wrong clan! Don't take stuff out of the stash here!";
-                const succeeded = takeStash(1, item);
-                if (succeeded) {
-                    print(`Took ${item.plural} from stash.`, "blue");
-                    quantitiesTaken.set(
-                        item,
-                        (quantitiesTaken.get(item) ?? 0) + (succeeded ? 1 : 0)
-                    );
-                }
-            }
-            return action();
-        } finally {
-            for (const [item, quantityTaken] of quantitiesTaken.entries()) {
-                // eslint-disable-next-line no-unsafe-finally
-                if (getClanName() !== stashClanName)
-                    throw "Wrong clan! Don't put stuff back in the stash here!";
-                retrieveItem(quantityTaken, item);
-                putStash(quantityTaken, item);
-                print(`Returned ${quantityTaken} ${item.plural} to stash.`, "blue");
-            }
-        }
-    });
 }
 
 if (availableAmount($item`packet of tall grass seeds`) > 0) {
@@ -390,145 +347,7 @@ if ($familiar`pocket professor`.experience < 300) {
     use(5, $item`pulled blue taffy`);
 }
 
-print("Time to buff up my familiar weight", "blue");
-const shortPotions: Map<Item, number> = new Map<Item, number>([
-    [$item`short stack of pancakes`, 35805],
-    [$item`short glass of water`, 34650],
-    [$item`short stick of butter`, 34650],
-]);
-if (!Array.from(shortPotions.keys()).some((sp) => have(effectModifier(sp, "effect")))) {
-    if (!Array.from(shortPotions.keys()).some((sp) => have(sp))) {
-        for (const [sp, price] of shortPotions) {
-            if (buy(sp, 1, price) > 0) break;
-        }
-    }
-    for (const sp of shortPotions.keys()) {
-        if (have(sp)) {
-            use(1, sp);
-            break;
-        }
-    }
-}
-const marginalMeatPerPound =
-    haveEffect($effect`shortly stacked`) +
-        haveEffect($effect`shortly buttered`) +
-        haveEffect($effect`shortly hydrated`) ===
-    0
-        ? 11.67
-        : 13.2;
-
-Item.all().forEach((item: Item) => {
-    if (
-        item.fullness + item.spleen + item.inebriety === 0 &&
-        item.tradeable &&
-        numericModifier(effectModifier(item, "Effect"), "Familiar Weight") > 0 &&
-        haveEffect(effectModifier(item, "Effect")) === 0
-    ) {
-        const equilibriumPrice =
-            numericModifier(effectModifier(item, "Effect"), "Familiar Weight") *
-            (marginalMeatPerPound * (freeFightCount + 5.5) +
-                11.67 * numericModifier(item, "Effect Duration"));
-        if (itemAmount(item) === 0) {
-            if (buy(1, item, equilibriumPrice) === 1) {
-                use(1, item);
-            }
-        } else if (equilibriumPrice > mallPrice(item)) {
-            use(1, item);
-        }
-    }
-});
-
-withStash([$item`defective game grid token`], () => use(1, $item`defective game grid token`));
-
-const weirdFamWeightPotions: Map<Item, () => number> = new Map<Item, () => number>([
-    [
-        $item`Love Song of icy revenge`,
-        () =>
-            Math.min(10, Math.ceil((5 + haveEffect($effect`cold hearted`)) / 2)) -
-            Math.min(10, Math.ceil(haveEffect($effect`cold hearted`) / 2)),
-    ],
-    [
-        $item`pulled blue taffy`,
-        () =>
-            Math.min(10, Math.ceil(10 + haveEffect($effect`blue swayed`) / 10)) -
-            Math.min(10, Math.ceil(haveEffect($effect`blue swayed`) / 10)),
-    ],
-    [
-        $item`prunets`,
-        () =>
-            Math.min(25, 5 + haveEffect($effect`she ate too much candy`)) -
-            Math.min(25, haveEffect($effect`she ate too much candy`)),
-    ],
-]);
-
-weirdFamWeightPotions.forEach((tubsiness, weirdPotion) => {
-    if (buy(weirdPotion, 1, marginalMeatPerPound * freeFightCount * tubsiness() + 1) === 1) {
-        use(1, weirdPotion);
-    }
-});
-
-if (haveEffect($effect`coated in slime`) === 0) {
-    cliExecute("/whitelist beanery");
-    runAway.setAutoAttack();
-    useFamiliar($familiar`left-hand man`);
-    outfit("slimefree");
-    equip($slot`familiar`, $item`HOA regulation book`);
-    advMacroAA($location`the slime tube`, runAway, () => {
-        return !have($effect`coated in slime`);
-    });
-    cliExecute("/whitelist alliance from heck");
-}
-
-const smallMLPotions = $items`para-pop, hoarded candy wad, green-frosted astral cupcake, yellow pixel potion, ash soda, mocking turtle, patent sallowness tonic`;
-smallMLPotions.forEach((potion) => {
-    if (itemAmount(potion) > 0 && haveEffect(effectModifier(potion, "Effect")) === 0) {
-        use(1, potion);
-    }
-});
-
-const famEquip =
-    haveEffect($effect`shortly stacked`) +
-        haveEffect($effect`shortly buttered`) +
-        haveEffect($effect`shortly hydrated`) ===
-    0
-        ? $item`loathing legion helicopter`
-        : $item`astral pet sweater`;
-
-if (!get("_favoriteBirdVisited")) {
-    useSkill(1, $skill`visit your favorite bird`);
-}
-
-useSkill(1, $skill`ur-kel's aria of annoyance`);
-
-if (!have($effect`triple-sized`)) {
-    equip($slot`acc1`, $item`powerful glove`);
-    useSkill(1, $skill`CHEAT CODE: triple size`);
-}
-
-if (!get("expressCardUsed")) {
-    maximize("mp", false);
-    const pyec = $item`Platinum Yendorian Express Card`;
-    withStash([pyec], () => use(pyec));
-
-    cliExecute("/cast * love song");
-}
-
-if (!get("_licenseToChillUsed")) {
-    useFamiliar($familiar`left-hand man`);
-    maximize("mp", false);
-    use(1, $item`license to chill`);
-    cliExecute("/cast * love song");
-}
-
-if (!get("_bagOTricksUsed")) {
-    withStash([$item`bag o' tricks`], () => use($item`bag o' tricks`));
-}
-
-weirdFamWeightPotions.forEach((tubsiness, weirdPotion) => {
-    while (buy(weirdPotion, 1, marginalMeatPerPound * freeFightCount * tubsiness() + 1) === 1) {
-        use(1, weirdPotion);
-    }
-});
+const famEquip = $item`gnomish housemaid's kgnee`;
 
 if (itemAmount($item`handful of smithereens`) > 0) {
     cliExecute(
@@ -552,29 +371,27 @@ if (get<number>("_godLobsterFights") === 0) {
         .repeat()
         .setAutoAttack();
     visitUrl("main.php?fightgodlobster=1");
-    runCombat();
+    runCombat(
+        Macro.skill($skill`curse of weaksauce`)
+            .skill($skill`Become a Wolf`)
+            .skill($skill`extract`)
+            .skill($skill`sing along`)
+            .skill($skill`micrometeor`)
+            .attack()
+            .repeat()
+            .toString()
+    );
     visitUrl("choice.php");
     runChoice(-1);
 }
 
-if (!get<boolean>("_photocopyUsed")) {
-    faxbot($monster`swarm of scarab beatles`);
-    Macro.if_(
-        "!monstername eldritch tentacle",
-        Macro.skill($skill`Feel Envy`)
-            .skill($skill`sing along`)
-            .skill($skill`extract`)
-            .skill($skill`Gingerbread Mob Hit`)
-    )
-        .if_(
-            "monstername eldritch tentacle",
-            Macro.skill($skill`CLEESH`).item($item`louder than bomb`)
-        )
-        .setAutoAttack();
-    useFamiliar($familiar`obtuse angel`);
+if (!get("_photocopyUsed")) {
+    faxbot($monster`witchess bishop`);
+    defaultMacro.setAutoAttack();
     outfit("drops");
     restoreHp(myMaxhp());
     use(1, $item`photocopied monster`);
+    runCombat(defaultMacro.toString());
     multiFightAutoAttack();
 }
 
@@ -596,7 +413,18 @@ if (get<number>("_godLobsterFights") === 1) {
         .repeat()
         .setAutoAttack();
     visitUrl("main.php?fightgodlobster=1");
-    runCombat();
+    runCombat(
+        Macro.skill($skill`curse of weaksauce`)
+            .skill($skill`Become a Bat`)
+            .skill($skill`Feel Nostalgic`)
+            .skill($skill`Feel Envy`)
+            .skill($skill`extract`)
+            .skill($skill`sing along`)
+            .skill($skill`micrometeor`)
+            .attack()
+            .repeat()
+            .toString()
+    );
     visitUrl("choice.php");
     runChoice(-1);
 }

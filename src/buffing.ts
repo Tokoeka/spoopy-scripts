@@ -115,10 +115,10 @@ export function buffUp(turnZero: boolean = false) {
     cliExecute("/cast * love song");
     use(1, $item`license to chill`);
     cliExecute("/cast * love song");
-    withStash(
-        [$item`platinum yendorian express card`],
+    withStash([$item`platinum yendorian express card`], () =>
         use(1, $item`platinum yendorian express card`)
     );
     cliExecute("/cast * love song");
+    withStash([$item`defective game grid token`], () => use(1, $item`defective game grid token`));
     return prices;
 }
