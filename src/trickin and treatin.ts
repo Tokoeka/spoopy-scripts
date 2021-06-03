@@ -34,7 +34,14 @@ import {
     SourceTerminal,
 } from "libram";
 import { weightBuff } from "./buffing";
-import { advMacro, advMacroAA, pickBjorn, prepWandererZone } from "./lib";
+import {
+    advMacro,
+    advMacroAA,
+    pickBjorn,
+    prepWandererZone,
+    getRandFromArray,
+    funBuddyNames,
+} from "./lib";
 
 const stasisFamiliars = $familiars`stocking mimic, ninja pirate zombie robot, comma chameleon, feather boa constrictor`;
 
@@ -54,6 +61,7 @@ const prepareToTreat = () => {
 const block = () => visitUrl("place.php?whichplace=town&action=town_trickortreat");
 
 function treat() {
+    print("It's time to treat yourself (to the downfall of capitalism, ideally)", "blue");
     set("choiceAdventure806", "1");
     prepareToTreat();
     if (!block().includes("whichhouse=")) {
@@ -76,6 +84,10 @@ function treat() {
 }
 
 function trick(trickFamiliar: Familiar, trickMacro: Macro) {
+    print(
+        `You're a tricksy little hobbitses, aren't you, ${getRandFromArray(funBuddyNames)}.`,
+        "blue"
+    );
     prepareToTrick(trickFamiliar, trickMacro);
     if (!block().includes("whichhouse=")) {
         if (myAdventures() < 5) {
@@ -168,6 +180,12 @@ export function runBlocks(blocks: number = -1, gnomeBuffs?: Map<weightBuff, numb
         if (gnomeBuffs) {
             gnomeBuffs.forEach((price, weightBuff) => {
                 if (haveEffect(weightBuff.effect) < 5) {
+                    print(
+                        `Uh oh ${getRandFromArray(funBuddyNames)}, we ran out of ${
+                            weightBuff.effect.name
+                        }!`,
+                        "blue"
+                    );
                     const needed = Math.ceil(
                         5 / numericModifier(weightBuff.item, "Effect Duration")
                     );
@@ -185,6 +203,7 @@ export function runBlocks(blocks: number = -1, gnomeBuffs?: Map<weightBuff, numb
 
         if (terminal) {
             if (getCounters("Digitize", -11, 0) !== "") {
+                print(`It's digitize time, ${getRandFromArray(funBuddyNames)}!`, "blue");
                 const digitizeMacro = Macro.externalIf(
                     myAdventures() * 1.1 <
                         (3 - digitizes) *
@@ -201,6 +220,7 @@ export function runBlocks(blocks: number = -1, gnomeBuffs?: Map<weightBuff, numb
         }
 
         if (sausage) {
+            print(`You've got a sausage in your sights`, "purple");
             const kramcoNumber =
                 5 + 3 * get("_sausageFights") + Math.pow(Math.max(0, get("_sausageFights") - 5), 3);
             if (totalTurnsPlayed() - get("_lastSausageMonsterTurn") + 1 >= kramcoNumber) {
@@ -213,6 +233,10 @@ export function runBlocks(blocks: number = -1, gnomeBuffs?: Map<weightBuff, numb
         }
 
         if (voting) {
+            print(
+                "The first Tuesday in November approaches, which makes perfect sense given that it's October.",
+                "blue"
+            );
             if (getCounters("Vote", 0, 0) !== "" && get("_voteFreeFights") < 3) {
                 const voteMacro = Macro.externalIf(
                     get("_voteMonster") === $monster`angry ghost`,
@@ -248,6 +272,13 @@ export function runBlocks(blocks: number = -1, gnomeBuffs?: Map<weightBuff, numb
                 ghosting !== (get("questPAGhost") !== "unstarted")
             )
         ) {
+            print(
+                `Sorry ${getRandFromArray(
+                    funBuddyNames
+                )}, we encountered a digitized monster but haven't initialized the counter yet!`,
+                "red"
+            );
+            print("Sorry if that red message freaked you out, we're all fine.", "grey");
             useFamiliar($familiar`frumious bandersnatch`);
             useSkill(1, $skill`ode to booze`);
             advMacroAA($location`the dire warren`, Macro.step("runaway"));
