@@ -1,12 +1,13 @@
 import { equip, myClass, outfit, useFamiliar } from "kolmafia";
 import { $class, $familiar, $item, $slot, have, set } from "libram";
 import { buffUp } from "./buffing";
+import { freeFights } from "./freefights";
 import { runBlocks } from "./trickin and treatin";
 
 function prepBlocks() {
     useFamiliar($familiar`reagnimated gnome`);
     if (!have($item`gnomish housemaid's kgnee`)) throw "Gotta get that knee";
-    equip($slot`familiar`, $item`gnomish housemadi's kgnee`);
+    equip($slot`familiar`, $item`gnomish housemaid's kgnee`);
     if (
         !have($item`Sledgehammer of the Vælkyr`) &&
         !have($item`Flail of the Seven Aspects`) &&
