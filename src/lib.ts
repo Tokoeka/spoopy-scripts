@@ -225,21 +225,17 @@ function testBjornFamiliar(fam: famPick) {
 }
 
 export function pickBjorn() {
-    let familiarChoice = $familiar`pair of ragged claws`;
-    let meatExpected =
-        haveEffect($effect`shortly stacked`) +
-            haveEffect($effect`shortly buttered`) +
-            haveEffect($effect`shortly hydrated`) ===
-        0
-            ? 11.67 * 5
-            : 13.2 * 5;
-    bjornFams.forEach((fam) => {
-        if (testBjornFamiliar(fam) > meatExpected) {
-            familiarChoice = fam.familiar;
-            meatExpected = testBjornFamiliar(fam);
-        }
-    });
+    const topPick = bjornFams.sort(
+        (bjornFam1, bjornFam2) => testBjornFamiliar(bjornFam1) - testBjornFamiliar(bjornFam2)
+    )[0];
+    const raggedClaws =
+        (5 / 1000) * (1 / 25) * mallPrice($item`huge bowl of candy`) +
+        0.4 * mallPrice($item`chocolate saucepan`);
     equip($slot`back`, $item`buddy bjorn`);
+    const familiarChoice =
+        raggedClaws > testBjornFamiliar(topPick)
+            ? $familiar`pair of ragged claws`
+            : topPick.familiar;
     bjornifyFamiliar(familiarChoice);
 }
 
