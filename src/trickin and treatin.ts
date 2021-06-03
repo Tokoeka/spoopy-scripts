@@ -6,6 +6,7 @@ import {
     haveEffect,
     haveFamiliar,
     inMultiFight,
+    mallPrice,
     myAdventures,
     myFamiliar,
     numericModifier,
@@ -134,7 +135,11 @@ function freeFight(macro: Macro, condition?: () => boolean, prep?: () => void) {
     advMacroAA(prepWandererZone(), macro, condition);
 }
 
-export function runBlocks(blocks: number = -1, gnomeBuffs?: Map<weightBuff, number>) {
+export function runBlocks(
+    blocks: number = -1,
+    gnomeBuffs: weightBuff[] = [],
+    baseWeight: number = 0
+) {
     const terminal = SourceTerminal.have();
 
     const kramco = $item`Kramco Sausage-o-Matic™`;
@@ -178,24 +183,32 @@ export function runBlocks(blocks: number = -1, gnomeBuffs?: Map<weightBuff, numb
         useFamiliar(trickFamiliar);
 
         if (gnomeBuffs) {
-            gnomeBuffs.forEach((price, weightBuff) => {
-                if (haveEffect(weightBuff.effect) < 5) {
-                    print(
-                        `Uh oh ${getRandFromArray(funBuddyNames)}, we ran out of ${
-                            weightBuff.effect.name
-                        }!`,
-                        "blue"
+            gnomeBuffs
+                .filter((gnomeBuff) => haveEffect(gnomeBuff.effect) < 5)
+                .sort((gnomeBuff1, gnomeBuff2) => gnomeBuff1.efficiency - gnomeBuff2.efficiency)
+                .forEach((gnomeBuff) => {
+                    const buffsHad = gnomeBuffs.filter(
+                        (gnomeBuff) => haveEffect(gnomeBuff.effect) >= 5
                     );
-                    const needed = Math.ceil(
-                        5 / numericModifier(weightBuff.item, "Effect Duration")
+                    const currWeight =
+                        baseWeight +
+                        buffsHad.map((gnomeBuff) => gnomeBuff.value).reduce((a, b) => a + b);
+                    const mpa =
+                        (1 / 25) * mallPrice($item`huge bowl of candy`) +
+                        0.4 * mallPrice($item`chocolate saucepan`);
+                    const equilibriumPrice =
+                        (gnomeBuff.value / (1000 - currWeight)) *
+                        (mpa - buffsHad.map((buff) => buff.price).reduce((a, b) => a + b));
+                    const toBuy = Math.ceil(
+                        (5 - haveEffect(gnomeBuff.effect)) /
+                            numericModifier(gnomeBuff.item, "Effect Duration")
                     );
-                    const bought = buy(weightBuff.item, needed, price);
-                    use(bought, weightBuff.item);
-                    if (bought !== needed) {
-                        gnomeBuffs.delete(weightBuff);
+                    const bought = buy(gnomeBuff.item, toBuy, equilibriumPrice);
+                    use(bought, gnomeBuff.item);
+                    if (bought !== toBuy) {
+                        gnomeBuffs.splice(gnomeBuffs.indexOf(gnomeBuff), 1);
                     }
-                }
-            });
+                });
         }
         const digitizes = get("_sourceTerminalDigitizeUses");
         const sausages = get("_sausageFights");

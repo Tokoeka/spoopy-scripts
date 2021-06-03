@@ -63,8 +63,6 @@ export function buffUp(turnZero: boolean = false) {
         return mpaCalc(buff.value, buff.price) - mpaCalc(0, 0) > 0;
     }
 
-    const prices: Map<weightBuff, number> = new Map<weightBuff, number>();
-
     weightBuffs.forEach((weightBuff) => {
         if (!have(weightBuff.effect)) {
             if (testPermanentBuff(weightBuff)) {
@@ -81,7 +79,6 @@ export function buffUp(turnZero: boolean = false) {
                 use(bought, weightBuff.item);
                 if (bought === toBuy) {
                     permanentWeightBuffs.push(weightBuff);
-                    prices.set(weightBuff, equilibriumPrice);
                 }
             }
         }
@@ -120,5 +117,5 @@ export function buffUp(turnZero: boolean = false) {
     );
     cliExecute("/cast * love song");
     withStash([$item`defective game grid token`], () => use(1, $item`defective game grid token`));
-    return prices;
+    return { permanentWeightBuffs, baseWeight };
 }

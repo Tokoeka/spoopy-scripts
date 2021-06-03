@@ -59,6 +59,6 @@ export function main(args: string) {
         const buffs = buffUp(true);
         freeFights();
         prepBlocks();
-        runBlocks(-1, buffs);
+        runBlocks(-1, buffs.permanentWeightBuffs, buffs.baseWeight);
     }
 }
