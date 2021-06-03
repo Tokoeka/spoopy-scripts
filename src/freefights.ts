@@ -75,7 +75,7 @@ function multiFightAutoAttack() {
     }
 }
 
-export function freeFight() {
+export function freeFights() {
     print(
         "Initializing: clan-hopping, ccs-setting, bastille-doing, deck-cheating, terminal-enhancing, briefcase-buffing"
     );
