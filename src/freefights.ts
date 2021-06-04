@@ -423,73 +423,6 @@ export function freeFights() {
 
     useFamiliar($familiar`reagnimated gnome`);
 
-    if (get<number>("_sourceTerminalDuplicateUses") === 0) {
-        if (hasAsdon) {
-            print(`Vroom vroom! Let's get some maps for pills!`, "blue");
-            cliExecute("terminal educate duplicate");
-            useFamiliar($familiar`reagnimated gnome`);
-            outfit("drops");
-            Macro.if_(
-                "(monstername eldritch tentacle) || (monsterid 1965)",
-                Macro.skill($skill`extract`)
-                    .skill($skill`sing along`)
-                    .attack()
-                    .repeat()
-            )
-                .if_(
-                    "!monstername eldritch tentacle",
-                    Macro.skill(`Feel Nostalgic`)
-                        .skill($skill`extract`)
-                        .skill($skill`sing along`)
-                        .skill($skill`duplicate`)
-                        .skill($skill`Asdon Martin: Missile Launcher`)
-                )
-                .setAutoAttack();
-            useSkill(1, $skill`Map the Monsters`);
-            while (get("mappingMonsters")) {
-                visitUrl("adventure.php?snarfblat=266");
-                if (handlingChoice()) {
-                    runChoice(1, "heyscriptswhatsupwinkwink=1085");
-                }
-                multiFightAutoAttack();
-            }
-            cliExecute("terminal educate digitize; terminal educate extract");
-        } else {
-            print(`Vroom vroom! Let's get some maps for pills!`, "blue");
-            cliExecute("terminal educate duplicate");
-            if (availableAmount($item`broken champagne bottle`) === 0) {
-                cliExecute("fold broken champagne bottle");
-            }
-            maximize("item", false);
-            useFamiliar($familiar`obtuse angel`);
-            Macro.if_(
-                "(monstername eldritch tentacle) || (monsterid 1965)",
-                Macro.skill($skill`extract`)
-                    .skill($skill`sing along`)
-                    .attack()
-                    .repeat()
-            )
-                .if_(
-                    "!monstername eldritch tentacle",
-                    Macro.skill(`Feel Nostalgic`)
-                        .skill($skill`extract`)
-                        .skill($skill`sing along`)
-                        .skill($skill`duplicate`)
-                        .skill($skill`gingerbread mob hit`)
-                )
-                .setAutoAttack();
-            useSkill(1, $skill`Map the Monsters`);
-            while (get("mappingMonsters")) {
-                visitUrl("adventure.php?snarfblat=266");
-                if (handlingChoice()) {
-                    runChoice(1, "heyscriptswhatsupwinkwink=1085");
-                }
-                multiFightAutoAttack();
-            }
-            cliExecute("terminal educate digitize; terminal educate extract");
-        }
-    }
-
     outfit("drops");
     useFamiliar($familiar`reagnimated gnome`);
 
@@ -522,7 +455,6 @@ export function freeFights() {
     }
 
     outfit("freefight stasis");
-    cliExecute("buttfart ragged claws");
     useFamiliar($familiar`reagnimated gnome`);
     equip($slot`familiar`, famEquip);
     print("Brrrr, Snojo time", "blue");
@@ -544,6 +476,8 @@ export function freeFights() {
     withStash([$item`moveable feast`], () => {
         use($item`moveable feast`);
         useFamiliar($familiar`frumious bandersnatch`);
+        use($item`moveable feast`);
+        useFamiliar($familiar`pocket professor`);
         use($item`moveable feast`);
         useFamiliar($familiar`reagnimated gnome`);
     });

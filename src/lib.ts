@@ -243,17 +243,19 @@ export function advMacroAA(
     location: Location,
     macro: Macro,
     parameter: number | (() => boolean) = 1,
-    afterCombatAction?: () => void
+    afterCombatAction?: () => void,
+    resetMacro: boolean = false
 ) {
     let n = 0;
     const condition = () => {
         return typeof parameter === "number" ? n < parameter : parameter();
     };
+    const macroText = macro.toString();
+    macro.setAutoAttack();
     while (condition()) {
-        macro.setAutoAttack();
-        const macroText = macro.toString();
+        if (resetMacro) macro.setAutoAttack();
         adv1(location, -1, (round: number, foe: Monster, text: string) => {
-            return macroText;
+            return resetMacro ? macro.toString() : macroText;
         });
         if (afterCombatAction) afterCombatAction();
         n++;

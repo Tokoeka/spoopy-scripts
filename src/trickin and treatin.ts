@@ -132,7 +132,7 @@ function freeFight(macro: Macro, condition?: () => boolean, prep?: () => void) {
     if (have(bjorn)) pickBjorn();
     if (have(proton)) ghostCheck();
     if (prep) prep();
-    advMacroAA(prepWandererZone(), macro, condition);
+    advMacroAA(prepWandererZone(), macro, condition, () => {}, true);
 }
 
 export function runBlocks(

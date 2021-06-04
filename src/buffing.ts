@@ -13,7 +13,7 @@ import {
     useFamiliar,
     weightAdjustment,
 } from "kolmafia";
-import { $familiar, $slot, $item, have } from "libram";
+import { $familiar, $slot, $item, have, $effect } from "libram";
 import { withStash } from "./lib";
 export interface weightBuff {
     item: Item;
@@ -88,9 +88,13 @@ export function buffUp(turnZero: boolean = false) {
             (mpa - permanentWeightBuffs.map((buff) => buff.price).reduce((a, b) => a + b, 0)) /
             (1 - weight() / 1000);
 
-        const turnZeroFreeFights = 10 + 20 + 20 + 50 + 10 + 2 + 2 + 6 + 10 + 6 + 6 + 6 + 2 + 2 + 2;
-        /* snojo + NEP + bricko + drunks + witchess + fax + chateau + lynyrd + glark +
-      shatteringpunch + xray + batoomerang + mob hit + jokester + tentacles
+        const turnZeroFreeFights =
+            10 +
+            2 +
+            (10 + 10 + 25 + 5 + 1 + 1 + 3 + 5 + 3 + 3 + 3 + 1 + 1) *
+                (have($effect`eldritch attunement`) ? 2 : 1);
+        /* snojo + tentacles + NEP + bricko + drunks + witchess + fax + chateau + lynyrd + glark +
+      shatteringpunch + xray + batoomerang + mob hit + jokester
       kramco intentionally omitted for thesis*/
 
         weightBuffs.forEach((weightBuff) => {
