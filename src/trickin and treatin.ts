@@ -140,6 +140,8 @@ export function runBlocks(
     gnomeBuffs: weightBuff[] = [],
     baseWeight: number = 0
 ) {
+    SourceTerminal.educate([$skill`digitize`, $skill`extract`]);
+
     const terminal = SourceTerminal.have();
 
     const kramco = $item`Kramco Sausage-o-Matic™`;

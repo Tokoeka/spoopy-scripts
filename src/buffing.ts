@@ -13,7 +13,7 @@ import {
     useFamiliar,
     weightAdjustment,
 } from "kolmafia";
-import { $familiar, $slot, $item, have, $effect } from "libram";
+import { $familiar, $slot, $item, have, $effect, get } from "libram";
 import { withStash } from "./lib";
 export interface weightBuff {
     item: Item;
@@ -111,15 +111,20 @@ export function buffUp(turnZero: boolean = false) {
             }
         });
     }
+
     useFamiliar($familiar`left-hand man`);
     maximize("mp", false);
     cliExecute("/cast * love song");
-    use(1, $item`license to chill`);
-    cliExecute("/cast * love song");
-    withStash([$item`platinum yendorian express card`], () =>
-        use(1, $item`platinum yendorian express card`)
-    );
-    cliExecute("/cast * love song");
+    if (!get("expressCardUsed")) {
+        withStash([$item`platinum yendorian express card`], () =>
+            use(1, $item`platinum yendorian express card`)
+        );
+        cliExecute("/cast * love song");
+    }
+    if (!get("_licenseToChillUsed")) {
+        use(1, $item`license to chill`);
+        cliExecute("/cast * love song");
+    }
     withStash([$item`defective game grid token`], () => use(1, $item`defective game grid token`));
     return { permanentWeightBuffs, baseWeight };
 }

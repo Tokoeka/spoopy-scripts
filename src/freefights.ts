@@ -123,12 +123,7 @@ export function freeFights() {
         if (!get("_mayoTankSoaked")) {
             cliExecute("mayosoak");
         }
-        if (myFullness() === fullnessLimit()) {
-            use(1, $item`Asdon Martin keyfob`);
-        }
     }
-
-    const hasAsdon = Object.getOwnPropertyNames(getCampground()).includes("Asdon Martin keyfob"); //hasdon
 
     if (haveEffect($effect`Coated in Slime`) > 0 && haveEffect($effect`Coated In Slime`) < 10) {
         print("abluting", "green");
@@ -324,10 +319,11 @@ export function freeFights() {
 
     const famEquip = $item`gnomish housemaid's kgnee`;
 
+    useFamiliar($familiar`Reagnimated Gnome`);
     if (!get("_photocopyUsed")) {
         faxbot($monster`witchess bishop`);
         defaultMacro.setAutoAttack();
-        outfit("drops");
+        outfit("freefight stasis");
         restoreHp(myMaxhp());
         use(1, $item`photocopied monster`);
         runCombat(defaultMacro.toString());
@@ -421,9 +417,7 @@ export function freeFights() {
         runChoice(-1);
     }
 
-    useFamiliar($familiar`reagnimated gnome`);
-
-    outfit("drops");
+    outfit("freefight stasis");
     useFamiliar($familiar`reagnimated gnome`);
 
     Macro.if_("monstername LOV Enforcer", Macro.attack().repeat())
@@ -455,7 +449,6 @@ export function freeFights() {
     }
 
     outfit("freefight stasis");
-    useFamiliar($familiar`reagnimated gnome`);
     equip($slot`familiar`, famEquip);
     print("Brrrr, Snojo time", "blue");
     pickBjorn();
@@ -482,7 +475,6 @@ export function freeFights() {
         useFamiliar($familiar`reagnimated gnome`);
     });
 
-    equip($slot`familiar`, famEquip);
     advMacroAA(
         $location`the neverending party`,
         defaultMacro,
@@ -512,13 +504,13 @@ export function freeFights() {
     }
 
     print("Tentacle", "blue");
-    if (!get<boolean>("_eldritchHorrorEvoked")) {
+    if (!get("_eldritchHorrorEvoked")) {
         pickBjorn();
         useSkill($skill`Evoke Eldritch Horror`);
         useSkill($skill`Tongue of the Walrus`);
         restoreHp(myMaxhp());
     }
-    if (!get<boolean>("_eldritchTentacleFought")) {
+    if (!get("_eldritchTentacleFought")) {
         pickBjorn();
         visitUrl("place.php?whichplace=forestvillage&action=fv_scientist");
         runChoice(1);
@@ -527,34 +519,53 @@ export function freeFights() {
 
     if (get("_backUpUses") < 11) {
         equip($slot`acc2`, $item`backup camera`);
-        Macro.if_(
-            "(monsterid 1974) && (hasskill back-up to your last enemy)",
-            Macro.skill($skill`back-up to your last enemy`)
-        )
-            .step(defaultMacro)
-            .setAutoAttack();
+        if (have($effect`eldritch attunement`)) {
+            Macro.if_(
+                "(monsterid 1974) && (hasskill back-up to your last enemy)",
+                Macro.skill($skill`back-up to your last enemy`)
+            )
+                .step(defaultMacro)
+                .setAutoAttack();
+            visitUrl("campground.php?action=witchess");
+            runChoice(1);
+            visitUrl(
+                "choice.php?option=1&whichchoice=1182&piece=" +
+                    $monster`witchess bishop`.id.toString() +
+                    "&pwd=" +
+                    myHash(),
+                false
+            );
+            multiFightAutoAttack();
+        } else {
+        }
+        restoreHp(myMaxhp());
+        defaultMacro.setAutoAttack();
+        outfit("freefight stasis");
         visitUrl("campground.php?action=witchess");
         runChoice(1);
         visitUrl(
             "choice.php?option=1&whichchoice=1182&piece=" +
-                $monster`witchess rook`.id.toString() +
+                $monster`witchess bishop`.id.toString() +
                 "&pwd=" +
                 myHash(),
             false
         );
-        multiFightAutoAttack();
-        restoreHp(myMaxhp());
-        defaultMacro.setAutoAttack();
-        outfit("freefight stasis");
+        const backUpZone =
+            prepWandererZone().combatPercent === 100 ? prepWandererZone() : $location`noob cave`;
+        advMacroAA(
+            backUpZone,
+            Macro.skill($skill`Back-Up to your Last Enemy`).step(defaultMacro),
+            () => get("_backUpUses") < 11,
+            pickBjorn
+        );
     }
-
     while (get("_witchessFights") < 4) {
         pickBjorn();
         visitUrl("campground.php?action=witchess");
         runChoice(1);
         visitUrl(
             "choice.php?option=1&whichchoice=1182&piece=" +
-                $monster`witchess rook`.id.toString() +
+                $monster`witchess bishop`.id.toString() +
                 "&pwd=" +
                 myHash(),
             false
@@ -619,9 +630,12 @@ export function freeFights() {
         useFamiliar($familiar`reagnimated gnome`);
         outfit("freefight stasis");
         pickBjorn();
+    }
+
+    if (!get("_chateauMonsterFought") && get("chateauMonster")?.attributes.includes("FREE")) {
         defaultMacro.setAutoAttack();
         visitUrl("place.php?whichplace=chateau&action=chateau_painting");
-        runCombat();
+        runCombat(defaultMacro.toString());
     }
 
     outfit("freefight stasis");
@@ -746,5 +760,18 @@ export function freeFights() {
         );
         multiFightAutoAttack();
     }
-    setAutoAttack(0);
+
+    useFamiliar($familiar`reagnimated gnome`);
+    outfit("freefight stasis");
+    advMacroAA(
+        $location`the red zeppelin`,
+        Macro.if_(
+            `!monsterid ${$monster`time-spinner prank`.id}`,
+            Macro.item($item`glark cable`)
+        ).step(defaultMacro),
+        () => {
+            return get("_glarkCableUses") < 5;
+        },
+        pickBjorn
+    );
 }
