@@ -4,8 +4,11 @@ import {
     effectModifier,
     equip,
     familiarWeight,
+    haveEffect,
     mallPrice,
     maximize,
+    myAdventures,
+    myEffects,
     myFamiliar,
     numericModifier,
     outfit,
@@ -25,7 +28,11 @@ export interface weightBuff {
 export function buffUp(turnZero: boolean = false) {
     const weightBuffs = Item.all()
         .filter((item) => {
-            return numericModifier(effectModifier(item, "Effect"), "Familiar Weight") > 0;
+            return (
+                numericModifier(effectModifier(item, "Effect"), "Familiar Weight") > 0 &&
+                item.fullness + item.spleen + item.inebriety === 0 &&
+                item.tradeable
+            );
         })
         .map((buffItem) => {
             return {
@@ -48,8 +55,17 @@ export function buffUp(turnZero: boolean = false) {
     useFamiliar($familiar`reagnimated gnome`);
     equip($slot`familiar`, $item`Gnomish housemaid's kgnee`);
     outfit("Trick");
-
-    const baseWeight = familiarWeight(myFamiliar()) + weightAdjustment();
+    const baseWeight =
+        familiarWeight(myFamiliar()) +
+        weightAdjustment() -
+        Object.keys(myEffects())
+            .filter((effectName) => {
+                const effect = $effect`${effectName}`;
+                const duration = myEffects()[effectName];
+                return duration / 0.85 < myAdventures() || effect.default.startsWith("use 1");
+            })
+            .map((effectName) => numericModifier($effect`${effectName}`, "Familiar Weight"))
+            .reduce((a, b) => a + b); //removing buffs that don't last very long or buffs that come from items, the latter because it'll some up when we iterate later
     const permanentWeightBuffs: weightBuff[] = [];
     const weight = () =>
         baseWeight + permanentWeightBuffs.map((buff) => buff.value).reduce((a, b) => a + b, 0);
@@ -64,9 +80,12 @@ export function buffUp(turnZero: boolean = false) {
     }
 
     weightBuffs.forEach((weightBuff) => {
-        if (!have(weightBuff.effect)) {
+        if (haveEffect(weightBuff.effect) < myAdventures()) {
             if (testPermanentBuff(weightBuff)) {
-                const toBuy = Math.ceil(1000 / numericModifier(weightBuff.item, "Effect Duration"));
+                const toBuy = Math.ceil(
+                    (myAdventures() - haveEffect(weightBuff.effect)) /
+                        numericModifier(weightBuff.item, "Effect Duration")
+                );
                 const equilibriumPrice =
                     -1 *
                     (((mpa -
@@ -80,6 +99,18 @@ export function buffUp(turnZero: boolean = false) {
                 if (bought === toBuy) {
                     permanentWeightBuffs.push(weightBuff);
                 }
+            }
+        } else {
+            const equilibriumPrice =
+                -1 *
+                (((mpa -
+                    permanentWeightBuffs.map((buff) => buff.price).reduce((a, b) => a + b, 0)) *
+                    (1 - (weight() + weightBuff.value) / 1000)) /
+                    (1 - weight() / 1000) +
+                    permanentWeightBuffs.map((buff) => buff.price).reduce((a, b) => a + b, 0) -
+                    mpa);
+            if (mallPrice(weightBuff.item) < equilibriumPrice) {
+                permanentWeightBuffs.push(weightBuff);
             }
         }
     });

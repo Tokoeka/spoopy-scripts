@@ -56,9 +56,8 @@ export function main(args: string) {
         const turnZero = args.includes("0") || args.includes("zero");
         buffUp(turnZero);
     } else if (args.includes("day") || args.includes("full")) {
-        const buffs = buffUp(true);
         freeFights();
         prepBlocks();
-        runBlocks(-1, buffs.permanentWeightBuffs, buffs.baseWeight);
+        runBlocks();
     }
 }

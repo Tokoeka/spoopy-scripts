@@ -34,7 +34,7 @@ import {
     set,
     SourceTerminal,
 } from "libram";
-import { weightBuff } from "./buffing";
+import { buffUp, weightBuff } from "./buffing";
 import {
     advMacro,
     advMacroAA,
@@ -135,11 +135,7 @@ function freeFight(macro: Macro, condition?: () => boolean, prep?: () => void) {
     advMacroAA(prepWandererZone(), macro, condition, () => {}, true);
 }
 
-export function runBlocks(
-    blocks: number = -1,
-    gnomeBuffs: weightBuff[] = [],
-    baseWeight: number = 0
-) {
+export function runBlocks(blocks: number = -1) {
     SourceTerminal.educate([$skill`digitize`, $skill`extract`]);
 
     const terminal = SourceTerminal.have();
@@ -180,10 +176,24 @@ export function runBlocks(
 
     let n = 0;
     const condition = () => (blocks >= 0 ? n < blocks : myAdventures() >= 5);
+    const nemesisStep = () =>
+        get("questG04Nemesis") === "unstarted"
+            ? -1
+            : get("questG04Nemesis") === "started"
+            ? 0
+            : parseInt(get("questG04Nemesis").substring(4), 10);
+    const doingNemesis = nemesisStep() >= 17 && nemesisStep() < 25;
+    const nemesis = () => (doingNemesis ? true : nemesisStep() < 25);
+    const buffs =
+        trickFamiliar === $familiar`reagnimated gnome` ||
+        trickFamiliar === $familiar`temporal riftlet`
+            ? buffUp()
+            : { permanentWeightBuffs: [], baseWeight: 0 };
+    const gnomeBuffs = buffs.permanentWeightBuffs;
+    const baseWeight = buffs.baseWeight;
 
-    while (condition()) {
+    while (condition() && nemesis()) {
         useFamiliar(trickFamiliar);
-
         if (gnomeBuffs) {
             gnomeBuffs
                 .filter((gnomeBuff) => haveEffect(gnomeBuff.effect) < 5)
@@ -215,6 +225,7 @@ export function runBlocks(
         const digitizes = get("_sourceTerminalDigitizeUses");
         const sausages = get("_sausageFights");
         const votes = get("_voteFreeFights");
+        const step = nemesisStep();
 
         if (terminal) {
             if (getCounters("Digitize", -11, 0) !== "") {
@@ -278,7 +289,6 @@ export function runBlocks(
                 () => equip($slot`back`, proton)
             );
         }
-
         if (
             digitizes !== get("_sourceTerminalDigitizeUses") &&
             !(
@@ -299,5 +309,12 @@ export function runBlocks(
             advMacroAA($location`the dire warren`, Macro.step("runaway"));
         }
         trickTreat(trickFamiliar, trickMacro);
+        if (doingNemesis && getCounters("Nemesis Assassin window end", -11, 0) !== "") {
+            useFamiliar(trickFamiliar);
+            advMacroAA(prepWandererZone(), trickMacro);
+            outfit("freefight stasis");
+            if (have(bjorn)) pickBjorn();
+            if (have(proton)) ghostCheck();
+        }
     }
 }
