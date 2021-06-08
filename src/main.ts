@@ -56,6 +56,7 @@ export function main(args: string) {
         const turnZero = args.includes("0") || args.includes("zero");
         buffUp(turnZero);
     } else if (args.includes("free fights")) {
+        buffUp(true);
         freeFights();
     } else if (args.includes("day") || args.includes("full")) {
         buffUp(true);

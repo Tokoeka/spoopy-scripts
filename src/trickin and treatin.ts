@@ -309,6 +309,7 @@ export function runBlocks(blocks: number = -1) {
             advMacroAA($location`the dire warren`, Macro.step("runaway"));
         }
         trickTreat(trickFamiliar, trickMacro);
+
         if (doingNemesis && getCounters("Nemesis Assassin window end", -11, 0) !== "") {
             useFamiliar(trickFamiliar);
             advMacroAA(prepWandererZone(), trickMacro);

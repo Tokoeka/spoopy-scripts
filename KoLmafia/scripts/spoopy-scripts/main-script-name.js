@@ -47616,7 +47616,11 @@ function main(args) {
   } else if (args.includes("buff")) {
     var turnZero = args.includes("0") || args.includes("zero");
     (0,_buffing__WEBPACK_IMPORTED_MODULE_1__.buffUp)(turnZero);
+  } else if (args.includes("free fights")) {
+    (0,_buffing__WEBPACK_IMPORTED_MODULE_1__.buffUp)(true);
+    (0,_freefights__WEBPACK_IMPORTED_MODULE_2__.freeFights)();
   } else if (args.includes("day") || args.includes("full")) {
+    (0,_buffing__WEBPACK_IMPORTED_MODULE_1__.buffUp)(true);
     (0,_freefights__WEBPACK_IMPORTED_MODULE_2__.freeFights)();
     prepBlocks();
     (0,_trickin_and_treatin__WEBPACK_IMPORTED_MODULE_3__.runBlocks)();
