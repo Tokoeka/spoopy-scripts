@@ -47402,26 +47402,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _buffing__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./buffing */ "./src/buffing.ts");
 /* harmony import */ var _freefights__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./freefights */ "./src/freefights.ts");
 /* harmony import */ var _trickin_and_treatin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./trickin and treatin */ "./src/trickin and treatin.ts");
-function _templateObject18() {
-  var data = _taggedTemplateLiteral(["beholed bedsheet"]);
-
-  _templateObject18 = function _templateObject18() {
-    return data;
-  };
-
-  return data;
-}
-
-function _templateObject17() {
-  var data = _taggedTemplateLiteral(["hat"]);
-
-  _templateObject17 = function _templateObject17() {
-    return data;
-  };
-
-  return data;
-}
-
 function _templateObject16() {
   var data = _taggedTemplateLiteral(["accordion thief"]);
 
@@ -47625,8 +47605,7 @@ function prepBlocks() {
     }
   }
 
-  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.outfit)("freefight stasis");
-  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$slot)(_templateObject17()), (0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject18()));
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.outfit)("trick");
 }
 
 function main(args) {
@@ -47929,8 +47908,10 @@ function treat() {
 
   for (var i = 0; i <= 11; i++) {
     if (block().match(RegExp("whichhouse=".concat(i, ">[^>]*?house_l")))) {
-      var house = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)("choice.php?whichchoice=804&option=3&whichhouse=".concat(i, "&pwd"));
-      if (house.includes("A Fun-Size Dilemma")) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.runChoice)(1);
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)("choice.php?whichchoice=804&option=3&whichhouse=".concat(i, "&pwd"));
+    } else if (block().match(RegExp("whichhouse=".concat(i, ">[^>]*?starhouse")))) {
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)("choice.php?whichchoice=804&option=3&whichhouse=".concat(i, "&pwd"));
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.runChoice)(2);
     }
   }
 

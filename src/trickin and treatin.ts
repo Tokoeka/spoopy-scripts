@@ -78,6 +78,7 @@ function treat() {
             visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
         } else if (block().match(RegExp(`whichhouse=${i}>[^>]*?starhouse`))) {
             visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
+            runChoice(2);
         }
     }
     if (block().match(RegExp(`whichhouse=\l+>[^>]*?house_l`)))
@@ -182,7 +183,9 @@ export function runBlocks(blocks: number = -1) {
             ? 0
             : parseInt(get("questG04Nemesis").substring(4), 10);
     const doingNemesis = nemesisStep() >= 17 && nemesisStep() < 25;
-    const nemesis = () => (doingNemesis ? true : nemesisStep() < 25);
+    const nemesis = () => {
+        return doingNemesis ? true : nemesisStep() < 25;
+    };
     const buffs =
         trickFamiliar === $familiar`reagnimated gnome` ||
         trickFamiliar === $familiar`temporal riftlet`

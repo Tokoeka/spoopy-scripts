@@ -44,8 +44,7 @@ function prepBlocks() {
                 break;
         }
     }
-    outfit("freefight stasis");
-    equip($slot`hat`, $item`beholed bedsheet`);
+    outfit("trick");
 }
 
 export function main(args: string) {
