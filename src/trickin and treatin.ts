@@ -52,7 +52,7 @@ const prepareToTrick = (trickFamiliar: Familiar, trickMacro: Macro) => {
     outfit("trick");
 };
 
-const treatOutfit = get<string>("spoopTreatOutfit") || "Eldritch Equippage";
+const treatOutfit = get<string>("spoopTreatOutfit") || "Eldritch Equipage";
 const tot = $familiar`trick-or-treating tot`;
 const prepareToTreat = () => {
     if (haveFamiliar(tot)) useFamiliar(tot);
@@ -65,23 +65,23 @@ function treat() {
     print("It's time to treat yourself (to the downfall of capitalism, ideally)", "blue");
     set("choiceAdventure806", "1");
     prepareToTreat();
-    if (!block().includes("whichhouse=")) {
+    const treatBlock = block();
+    if (!treatBlock.includes("whichhouse=")) {
         if (myAdventures() < 5) {
             throw "Need a new block and I'm all out of turns, baby!";
         } else {
             visitUrl("choice.php?whichchoice=804&pwd&option=1");
         }
         if (!block().includes("whichhouse=")) throw "Something went awry when finding a new block!";
-    } else {
-        for (let i = 1; i <= 11; i++) {
-            if (block().match(RegExp(`whichhouse=${i}>[^>]*?house_l`))) {
-                visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
-                if (handlingChoice()) runChoice(-1);
-            }
-        }
-        if (block().match(RegExp(`whichhouse=\d+>[^>]*?house_l`)))
-            throw "I thought I was out of light houses, but I wasn't. Alas!";
     }
+    for (let i = 0; i <= 11; i++) {
+        if (treatBlock.match(RegExp(`whichhouse=${i}>[^>]*?house_l`))) {
+            const house = visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
+            if (house.includes("A Fun-Size Dilemma")) runChoice(-1);
+        }
+    }
+    if (block().match(RegExp(`whichhouse=\l+>[^>]*?house_l`)))
+        throw "I thought I was out of light houses, but I wasn't. Alas!";
 }
 
 function trick(trickFamiliar: Familiar, trickMacro: Macro) {
@@ -97,17 +97,16 @@ function trick(trickFamiliar: Familiar, trickMacro: Macro) {
             visitUrl("choice.php?whichchoice=804&pwd&option=1");
         }
         if (!block().includes("whichhouse=")) throw "Something went awry when finding a new block!";
-    } else {
-        for (let i = 1; i <= 11; i++) {
-            if (block().match(RegExp(`whichhouse=${i}>[^>]*?house_d`))) {
-                visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
-                runCombat(trickMacro.toString());
-                while (inMultiFight()) runCombat(trickMacro.toString());
-            }
-        }
-        if (block().match(RegExp(`whichhouse=\d+>[^>]*?house_d`)))
-            throw "I thought I was out of dark houses, but I wasn't. Alas!";
     }
+    for (let i = 0; i <= 11; i++) {
+        if (block().match(RegExp(`whichhouse=${i}>[^>]*?house_d`))) {
+            visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
+            runCombat(trickMacro.toString());
+            while (inMultiFight()) runCombat(trickMacro.toString());
+        }
+    }
+    if (block().match(RegExp(`whichhouse=\d+>[^>]*?house_d`)))
+        throw "I thought I was out of dark houses, but I wasn't. Alas!";
 }
 
 function trickTreat(trickFamiliar: Familiar, trickMacro: Macro) {
@@ -191,7 +190,6 @@ export function runBlocks(blocks: number = -1) {
             : { permanentWeightBuffs: [], baseWeight: 0 };
     const gnomeBuffs = buffs.permanentWeightBuffs;
     const baseWeight = buffs.baseWeight;
-
     while (condition() && nemesis()) {
         useFamiliar(trickFamiliar);
         if (gnomeBuffs) {
@@ -225,8 +223,7 @@ export function runBlocks(blocks: number = -1) {
         const digitizes = get("_sourceTerminalDigitizeUses");
         const sausages = get("_sausageFights");
         const votes = get("_voteFreeFights");
-        const step = nemesisStep();
-
+        outfit("trick");
         if (terminal) {
             if (getCounters("Digitize", -11, 0) !== "") {
                 print(`It's digitize time, ${getRandFromArray(funBuddyNames)}!`, "blue");
@@ -246,7 +243,6 @@ export function runBlocks(blocks: number = -1) {
         }
 
         if (sausage) {
-            print(`You've got a sausage in your sights`, "purple");
             const kramcoNumber =
                 5 + 3 * get("_sausageFights") + Math.pow(Math.max(0, get("_sausageFights") - 5), 3);
             if (totalTurnsPlayed() - get("_lastSausageMonsterTurn") + 1 >= kramcoNumber) {
@@ -282,11 +278,11 @@ export function runBlocks(blocks: number = -1) {
                 throw `Something went wrong with my ghosts. Dammit, Walter Peck!`;
             }
             print(`Lonely rivers flow to the sea, to the sea. Time to wrastle a ghost.`, "blue");
+            () => equip($slot`back`, proton);
             advMacro(
                 ghostLocation,
                 Macro.skill("shoot ghost").skill("shoot ghost").skill("trap ghost"),
-                () => get("questPAGhost") !== "unstarted",
-                () => equip($slot`back`, proton)
+                () => get("questPAGhost") !== "unstarted"
             );
         }
         if (

@@ -47900,7 +47900,7 @@ var prepareToTrick = function prepareToTrick(trickFamiliar, trickMacro) {
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.outfit)("trick");
 };
 
-var treatOutfit = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("spoopTreatOutfit") || "Eldritch Equippage";
+var treatOutfit = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("spoopTreatOutfit") || "Eldritch Equipage";
 var tot = (0,libram__WEBPACK_IMPORTED_MODULE_3__.$familiar)(_templateObject2());
 
 var prepareToTreat = function prepareToTreat() {
@@ -47916,8 +47916,9 @@ function treat() {
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("It's time to treat yourself (to the downfall of capitalism, ideally)", "blue");
   (0,libram__WEBPACK_IMPORTED_MODULE_3__.set)("choiceAdventure806", "1");
   prepareToTreat();
+  var treatBlock = block();
 
-  if (!block().includes("whichhouse=")) {
+  if (!treatBlock.includes("whichhouse=")) {
     if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myAdventures)() < 5) {
       throw "Need a new block and I'm all out of turns, baby!";
     } else {
@@ -47925,16 +47926,16 @@ function treat() {
     }
 
     if (!block().includes("whichhouse=")) throw "Something went awry when finding a new block!";
-  } else {
-    for (var i = 1; i <= 11; i++) {
-      if (block().match(RegExp("whichhouse=".concat(i, ">[^>]*?house_l")))) {
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)("choice.php?whichchoice=804&option=3&whichhouse=".concat(i, "&pwd"));
-        if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.handlingChoice)()) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.runChoice)(-1);
-      }
-    }
-
-    if (block().match(RegExp("whichhouse=d+>[^>]*?house_l"))) throw "I thought I was out of light houses, but I wasn't. Alas!";
   }
+
+  for (var i = 0; i <= 11; i++) {
+    if (treatBlock.match(RegExp("whichhouse=".concat(i, ">[^>]*?house_l")))) {
+      var house = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)("choice.php?whichchoice=804&option=3&whichhouse=".concat(i, "&pwd"));
+      if (house.includes("A Fun-Size Dilemma")) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.runChoice)(-1);
+    }
+  }
+
+  if (block().match(RegExp("whichhouse=l+>[^>]*?house_l"))) throw "I thought I was out of light houses, but I wasn't. Alas!";
 }
 
 function trick(trickFamiliar, trickMacro) {
@@ -47949,20 +47950,20 @@ function trick(trickFamiliar, trickMacro) {
     }
 
     if (!block().includes("whichhouse=")) throw "Something went awry when finding a new block!";
-  } else {
-    for (var i = 1; i <= 11; i++) {
-      if (block().match(RegExp("whichhouse=".concat(i, ">[^>]*?house_d")))) {
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)("choice.php?whichchoice=804&option=3&whichhouse=".concat(i, "&pwd"));
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.runCombat)(trickMacro.toString());
+  }
 
-        while ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.inMultiFight)()) {
-          (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.runCombat)(trickMacro.toString());
-        }
+  for (var i = 0; i <= 11; i++) {
+    if (block().match(RegExp("whichhouse=".concat(i, ">[^>]*?house_d")))) {
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)("choice.php?whichchoice=804&option=3&whichhouse=".concat(i, "&pwd"));
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.runCombat)(trickMacro.toString());
+
+      while ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.inMultiFight)()) {
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.runCombat)(trickMacro.toString());
       }
     }
-
-    if (block().match(RegExp("whichhouse=d+>[^>]*?house_d"))) throw "I thought I was out of dark houses, but I wasn't. Alas!";
   }
+
+  if (block().match(RegExp("whichhouse=d+>[^>]*?house_d"))) throw "I thought I was out of dark houses, but I wasn't. Alas!";
 }
 
 function trickTreat(trickFamiliar, trickMacro) {
@@ -48058,7 +48059,7 @@ function runBlocks() {
     var digitizes = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sourceTerminalDigitizeUses");
     var sausages = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sausageFights");
     var votes = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_voteFreeFights");
-    var step = nemesisStep();
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.outfit)("trick");
 
     if (terminal) {
       if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCounters)("Digitize", -11, 0) !== "") {
@@ -48072,7 +48073,6 @@ function runBlocks() {
 
     if (sausage) {
       (function () {
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("You've got a sausage in your sights", "purple");
         var kramcoNumber = 5 + 3 * (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sausageFights") + Math.pow(Math.max(0, (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sausageFights") - 5), 3);
 
         if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.totalTurnsPlayed)() - (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_lastSausageMonsterTurn") + 1 >= kramcoNumber) {
@@ -48108,10 +48108,13 @@ function runBlocks() {
       }
 
       (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Lonely rivers flow to the sea, to the sea. Time to wrastle a ghost.", "blue");
+
+      (function () {
+        return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$slot)(_templateObject19()), proton);
+      });
+
       (0,_lib__WEBPACK_IMPORTED_MODULE_2__.advMacro)(ghostLocation, libram__WEBPACK_IMPORTED_MODULE_3__.Macro.skill("shoot ghost").skill("shoot ghost").skill("trap ghost"), function () {
         return (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questPAGhost") !== "unstarted";
-      }, function () {
-        return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$slot)(_templateObject19()), proton);
       });
     }
 
