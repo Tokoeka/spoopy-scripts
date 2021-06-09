@@ -63,10 +63,13 @@ export function buffUp(turnZero: boolean = false) {
             .filter((effectName) => {
                 const effect = $effect`${effectName}`;
                 const duration = myEffects()[effectName];
-                return duration / 0.85 < myAdventures() || effect.default.startsWith("use 1");
+                return (
+                    duration / 0.85 < myAdventures() ||
+                    (effect.default ? effect.default.startsWith("use 1") : false)
+                );
             })
             .map((effectName) => numericModifier($effect`${effectName}`, "Familiar Weight"))
-            .reduce((a, b) => a + b); //removing buffs that don't last very long or buffs that come from items, the latter because it'll some up when we iterate later
+            .reduce((a, b) => a + b, 0); //removing buffs that don't last very long or buffs that come from items, the latter because it'll some up when we iterate later
     const permanentWeightBuffs: weightBuff[] = [];
     const weight = () =>
         baseWeight + permanentWeightBuffs.map((buff) => buff.value).reduce((a, b) => a + b, 0);

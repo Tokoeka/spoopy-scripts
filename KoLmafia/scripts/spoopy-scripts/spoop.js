@@ -44112,12 +44112,12 @@ function buffUp() {
   var baseWeight = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.familiarWeight)((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myFamiliar)()) + (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.weightAdjustment)() - Object.keys((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myEffects)()).filter(function (effectName) {
     var effect = (0,libram__WEBPACK_IMPORTED_MODULE_2__.$effect)(_templateObject6(), effectName);
     var duration = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myEffects)()[effectName];
-    return duration / 0.85 < (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myAdventures)() || effect["default"].startsWith("use 1");
+    return duration / 0.85 < (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myAdventures)() || (effect["default"] ? effect["default"].startsWith("use 1") : false);
   }).map(function (effectName) {
     return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.numericModifier)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$effect)(_templateObject7(), effectName), "Familiar Weight");
   }).reduce(function (a, b) {
     return a + b;
-  }); //removing buffs that don't last very long or buffs that come from items, the latter because it'll some up when we iterate later
+  }, 0); //removing buffs that don't last very long or buffs that come from items, the latter because it'll some up when we iterate later
 
   var permanentWeightBuffs = [];
 
