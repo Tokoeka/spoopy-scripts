@@ -102,9 +102,8 @@ function trick(trickFamiliar: Familiar, trickMacro: Macro) {
         }
         if (!block().includes("whichhouse=")) throw "Something went awry when finding a new block!";
     }
-    const thisBlock = block();
     for (let i = 0; i <= 11; i++) {
-        if (thisBlock.match(RegExp(`whichhouse=${i}>[^>]*?house_d`))) {
+        if (block().match(RegExp(`whichhouse=${i}>[^>]*?house_d`))) {
             visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
             runCombat(trickMacro.toString());
             while (inMultiFight()) runCombat(trickMacro.toString());

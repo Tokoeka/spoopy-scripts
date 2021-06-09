@@ -47937,10 +47937,8 @@ function trick(trickFamiliar, trickMacro) {
     if (!block().includes("whichhouse=")) throw "Something went awry when finding a new block!";
   }
 
-  var thisBlock = block();
-
   for (var i = 0; i <= 11; i++) {
-    if (thisBlock.match(RegExp("whichhouse=".concat(i, ">[^>]*?house_d")))) {
+    if (block().match(RegExp("whichhouse=".concat(i, ">[^>]*?house_d")))) {
       (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)("choice.php?whichchoice=804&option=3&whichhouse=".concat(i, "&pwd"));
       (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.runCombat)(trickMacro.toString());
 
