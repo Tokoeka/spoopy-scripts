@@ -2,14 +2,17 @@ import {
     buy,
     cliExecute,
     equip,
+    gametimeToInt,
     getCounters,
     handlingChoice,
     haveEffect,
     haveFamiliar,
+    inebrietyLimit,
     inMultiFight,
     mallPrice,
     myAdventures,
     myFamiliar,
+    myInebriety,
     numericModifier,
     outfit,
     print,
@@ -198,131 +201,144 @@ export function runBlocks(blocks: number = -1) {
             : { permanentWeightBuffs: [], baseWeight: 0 };
     const gnomeBuffs = buffs.permanentWeightBuffs;
     const baseWeight = buffs.baseWeight;
-    while (condition() && nemesis()) {
-        useFamiliar(trickFamiliar);
-        if (gnomeBuffs) {
-            gnomeBuffs
-                .filter((gnomeBuff) => haveEffect(gnomeBuff.effect) < 5)
-                .sort((gnomeBuff1, gnomeBuff2) => gnomeBuff1.efficiency - gnomeBuff2.efficiency)
-                .forEach((gnomeBuff) => {
-                    const buffsHad = gnomeBuffs.filter(
-                        (gnomeBuff) => haveEffect(gnomeBuff.effect) >= 5
-                    );
-                    const currWeight =
-                        baseWeight +
-                        buffsHad.map((gnomeBuff) => gnomeBuff.value).reduce((a, b) => a + b);
-                    const mpa =
-                        (1 / 25) * mallPrice($item`huge bowl of candy`) +
-                        0.4 * mallPrice($item`chocolate saucepan`);
-                    const equilibriumPrice =
-                        (gnomeBuff.value / (1000 - currWeight)) *
-                        (mpa - buffsHad.map((buff) => buff.price).reduce((a, b) => a + b));
-                    const toBuy = Math.ceil(
-                        (5 - haveEffect(gnomeBuff.effect)) /
-                            numericModifier(gnomeBuff.item, "Effect Duration")
-                    );
-                    const bought = buy(gnomeBuff.item, toBuy, equilibriumPrice);
-                    use(bought, gnomeBuff.item);
-                    if (bought !== toBuy) {
-                        gnomeBuffs.splice(gnomeBuffs.indexOf(gnomeBuff), 1);
-                    }
-                });
-        }
-        const digitizes = get("_sourceTerminalDigitizeUses");
-        const sausages = get("_sausageFights");
-        const votes = get("_voteFreeFights");
-        outfit("trick");
-        if (terminal) {
-            if (getCounters("Digitize", -11, 0) !== "") {
-                print(`It's digitize time, ${getRandFromArray(funBuddyNames)}!`, "blue");
-                const digitizeMacro = Macro.externalIf(
-                    myAdventures() * 1.1 <
-                        (3 - digitizes) *
-                            (5 *
-                                (get("_sourceTerminalDigitizeMonsterCount") *
-                                    (1 + get("_sourceTerminalDigitizeMonsterCount"))) -
-                                3),
-                    Macro.trySkill("digitize")
-                ).step(trickMacro);
-                freeFight(digitizeMacro, () => {
-                    return getCounters("Digitize", -11, 0) !== "";
-                });
-            }
-        }
-
-        if (sausage) {
-            const kramcoNumber =
-                5 + 3 * get("_sausageFights") + Math.pow(Math.max(0, get("_sausageFights") - 5), 3);
-            if (totalTurnsPlayed() - get("_lastSausageMonsterTurn") + 1 >= kramcoNumber) {
-                freeFight(
-                    trickMacro,
-                    () => totalTurnsPlayed() - get("_lastSausageMonsterTurn") + 1 >= kramcoNumber,
-                    () => equip($slot`off-hand`, kramco)
-                );
-            }
-        }
-
-        if (voting) {
-            print(
-                "The first Tuesday in November approaches, which makes perfect sense given that it's October.",
-                "blue"
-            );
-            if (getCounters("Vote", 0, 0) !== "" && get("_voteFreeFights") < 3) {
-                const voteMacro = Macro.externalIf(
-                    get("_voteMonster") === $monster`angry ghost`,
-                    Macro.skill("silent treatment")
-                ).step(trickMacro);
-                freeFight(
-                    voteMacro,
-                    () => getCounters("Vote", 0, 0) !== "" && get("_voteFreeFights") < 3,
-                    () => equip($slot`acc3`, voteBadge)
-                );
-            }
-        }
-        const ghosting = get("questPAGhost") !== "unstarted";
-        if (ghost && ghosting) {
-            const ghostLocation = get("ghostLocation") || $location`none`;
-            if (ghostLocation === $location`none`) {
-                throw `Something went wrong with my ghosts. Dammit, Walter Peck!`;
-            }
-            print(`Lonely rivers flow to the sea, to the sea. Time to wrastle a ghost.`, "blue");
-            () => equip($slot`back`, proton);
-            advMacro(
-                ghostLocation,
-                Macro.skill("shoot ghost")
-                    .skill("shoot ghost")
-                    .skill("shoot ghost")
-                    .skill("trap ghost"),
-                () => get("questPAGhost") !== "unstarted"
-            );
-        }
-        if (
-            digitizes !== get("_sourceTerminalDigitizeUses") &&
-            !(
-                votes !== get("_voteFreeFights") ||
-                sausages !== get("_sausageFights") ||
-                ghosting !== (get("questPAGhost") !== "unstarted")
-            )
-        ) {
-            print(
-                `Sorry ${getRandFromArray(
-                    funBuddyNames
-                )}, we encountered a digitized monster but haven't initialized the counter yet!`,
-                "red"
-            );
-            print("Sorry if that red message freaked you out, we're all fine.", "grey");
-            useFamiliar($familiar`frumious bandersnatch`);
-            useSkill(1, $skill`ode to booze`);
-            advMacroAA($location`the dire warren`, Macro.step("runaway"));
-        }
-        trickTreat(trickFamiliar, trickMacro);
-
-        if (doingNemesis && getCounters("Nemesis Assassin window end", -11, 0) !== "") {
+    const startTime = gametimeToInt();
+    try {
+        while (condition() && nemesis()) {
             useFamiliar(trickFamiliar);
-            advMacroAA(prepWandererZone(), trickMacro);
-            outfit("freefight stasis");
-            if (have(bjorn)) pickBjorn();
-            if (have(proton)) ghostCheck();
+            if (gnomeBuffs) {
+                gnomeBuffs
+                    .filter((gnomeBuff) => haveEffect(gnomeBuff.effect) < 5)
+                    .sort((gnomeBuff1, gnomeBuff2) => gnomeBuff1.efficiency - gnomeBuff2.efficiency)
+                    .forEach((gnomeBuff) => {
+                        const buffsHad = gnomeBuffs.filter(
+                            (gnomeBuff) => haveEffect(gnomeBuff.effect) >= 5
+                        );
+                        const currWeight =
+                            baseWeight +
+                            buffsHad.map((gnomeBuff) => gnomeBuff.value).reduce((a, b) => a + b);
+                        const mpa =
+                            (1 / 25) * mallPrice($item`huge bowl of candy`) +
+                            0.4 * mallPrice($item`chocolate saucepan`);
+                        const equilibriumPrice =
+                            (gnomeBuff.value / (1000 - currWeight)) *
+                            (mpa - buffsHad.map((buff) => buff.price).reduce((a, b) => a + b));
+                        const toBuy = Math.ceil(
+                            (5 - haveEffect(gnomeBuff.effect)) /
+                                numericModifier(gnomeBuff.item, "Effect Duration")
+                        );
+                        const bought = buy(gnomeBuff.item, toBuy, equilibriumPrice);
+                        use(bought, gnomeBuff.item);
+                        if (bought !== toBuy) {
+                            gnomeBuffs.splice(gnomeBuffs.indexOf(gnomeBuff), 1);
+                        }
+                    });
+            }
+            const digitizes = get("_sourceTerminalDigitizeUses");
+            const sausages = get("_sausageFights");
+            const votes = get("_voteFreeFights");
+            outfit("trick");
+            if (terminal) {
+                if (getCounters("Digitize", -11, 0) !== "") {
+                    print(`It's digitize time, ${getRandFromArray(funBuddyNames)}!`, "blue");
+                    const digitizeMacro = Macro.externalIf(
+                        myAdventures() * 1.1 <
+                            (3 - digitizes) *
+                                (5 *
+                                    (get("_sourceTerminalDigitizeMonsterCount") *
+                                        (1 + get("_sourceTerminalDigitizeMonsterCount"))) -
+                                    3),
+                        Macro.trySkill("digitize")
+                    ).step(trickMacro);
+                    freeFight(digitizeMacro, () => {
+                        return getCounters("Digitize", -11, 0) !== "";
+                    });
+                }
+            }
+
+            if (sausage) {
+                const kramcoNumber =
+                    5 +
+                    3 * get("_sausageFights") +
+                    Math.pow(Math.max(0, get("_sausageFights") - 5), 3);
+                if (totalTurnsPlayed() - get("_lastSausageMonsterTurn") + 1 >= kramcoNumber) {
+                    freeFight(
+                        trickMacro,
+                        () =>
+                            totalTurnsPlayed() - get("_lastSausageMonsterTurn") + 1 >= kramcoNumber,
+                        () => equip($slot`off-hand`, kramco)
+                    );
+                }
+            }
+
+            if (voting) {
+                print(
+                    "The first Tuesday in November approaches, which makes perfect sense given that it's October.",
+                    "blue"
+                );
+                if (getCounters("Vote", 0, 0) !== "" && get("_voteFreeFights") < 3) {
+                    const voteMacro = Macro.externalIf(
+                        get("_voteMonster") === $monster`angry ghost`,
+                        Macro.skill("silent treatment")
+                    ).step(trickMacro);
+                    freeFight(
+                        voteMacro,
+                        () => getCounters("Vote", 0, 0) !== "" && get("_voteFreeFights") < 3,
+                        () => equip($slot`acc3`, voteBadge)
+                    );
+                }
+            }
+            const ghosting = get("questPAGhost") !== "unstarted";
+            if (ghost && ghosting && myInebriety() < inebrietyLimit()) {
+                const ghostLocation = get("ghostLocation") || $location`none`;
+                if (ghostLocation === $location`none`) {
+                    throw `Something went wrong with my ghosts. Dammit, Walter Peck!`;
+                }
+                print(
+                    `Lonely rivers flow to the sea, to the sea. Time to wrastle a ghost.`,
+                    "blue"
+                );
+                () => equip($slot`back`, proton);
+                advMacro(
+                    ghostLocation,
+                    Macro.skill("shoot ghost")
+                        .skill("shoot ghost")
+                        .skill("shoot ghost")
+                        .skill("trap ghost"),
+                    () => get("questPAGhost") !== "unstarted"
+                );
+            }
+            if (
+                digitizes !== get("_sourceTerminalDigitizeUses") &&
+                !(
+                    votes !== get("_voteFreeFights") ||
+                    sausages !== get("_sausageFights") ||
+                    ghosting !== (get("questPAGhost") !== "unstarted")
+                )
+            ) {
+                print(
+                    `Sorry ${getRandFromArray(
+                        funBuddyNames
+                    )}, we encountered a digitized monster but haven't initialized the counter yet!`,
+                    "red"
+                );
+                print("Sorry if that red message freaked you out, we're all fine.", "grey");
+                useFamiliar($familiar`frumious bandersnatch`);
+                useSkill(1, $skill`ode to booze`);
+                advMacroAA($location`the dire warren`, Macro.step("runaway"));
+            }
+            trickTreat(trickFamiliar, trickMacro);
+
+            if (doingNemesis && getCounters("Nemesis Assassin window end", -11, 0) !== "") {
+                useFamiliar(trickFamiliar);
+                advMacroAA(prepWandererZone(), trickMacro);
+                outfit("freefight stasis");
+                if (have(bjorn)) pickBjorn();
+                if (have(proton)) ghostCheck();
+            }
         }
+    } finally {
+        const endTime = gametimeToInt();
+        const duration = endTime - startTime;
+        print(`I spent ${duration} milliseconds!`, "blue");
     }
 }

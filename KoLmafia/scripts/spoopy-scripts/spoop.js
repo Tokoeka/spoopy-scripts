@@ -48007,119 +48007,126 @@ function runBlocks() {
   };
   var gnomeBuffs = buffs.permanentWeightBuffs;
   var baseWeight = buffs.baseWeight;
+  var startTime = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.gametimeToInt)();
 
-  while (condition() && nemesis()) {
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)(trickFamiliar);
+  try {
+    while (condition() && nemesis()) {
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)(trickFamiliar);
 
-    if (gnomeBuffs) {
-      gnomeBuffs.filter(function (gnomeBuff) {
-        return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)(gnomeBuff.effect) < 5;
-      }).sort(function (gnomeBuff1, gnomeBuff2) {
-        return gnomeBuff1.efficiency - gnomeBuff2.efficiency;
-      }).forEach(function (gnomeBuff) {
-        var buffsHad = gnomeBuffs.filter(function (gnomeBuff) {
-          return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)(gnomeBuff.effect) >= 5;
-        });
-        var currWeight = baseWeight + buffsHad.map(function (gnomeBuff) {
-          return gnomeBuff.value;
-        }).reduce(function (a, b) {
-          return a + b;
-        });
-        var mpa = 1 / 25 * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject12())) + 0.4 * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject13()));
-        var equilibriumPrice = gnomeBuff.value / (1000 - currWeight) * (mpa - buffsHad.map(function (buff) {
-          return buff.price;
-        }).reduce(function (a, b) {
-          return a + b;
-        }));
-        var toBuy = Math.ceil((5 - (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)(gnomeBuff.effect)) / (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.numericModifier)(gnomeBuff.item, "Effect Duration"));
-        var bought = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.buy)(gnomeBuff.item, toBuy, equilibriumPrice);
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(bought, gnomeBuff.item);
+      if (gnomeBuffs) {
+        gnomeBuffs.filter(function (gnomeBuff) {
+          return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)(gnomeBuff.effect) < 5;
+        }).sort(function (gnomeBuff1, gnomeBuff2) {
+          return gnomeBuff1.efficiency - gnomeBuff2.efficiency;
+        }).forEach(function (gnomeBuff) {
+          var buffsHad = gnomeBuffs.filter(function (gnomeBuff) {
+            return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)(gnomeBuff.effect) >= 5;
+          });
+          var currWeight = baseWeight + buffsHad.map(function (gnomeBuff) {
+            return gnomeBuff.value;
+          }).reduce(function (a, b) {
+            return a + b;
+          });
+          var mpa = 1 / 25 * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject12())) + 0.4 * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject13()));
+          var equilibriumPrice = gnomeBuff.value / (1000 - currWeight) * (mpa - buffsHad.map(function (buff) {
+            return buff.price;
+          }).reduce(function (a, b) {
+            return a + b;
+          }));
+          var toBuy = Math.ceil((5 - (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)(gnomeBuff.effect)) / (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.numericModifier)(gnomeBuff.item, "Effect Duration"));
+          var bought = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.buy)(gnomeBuff.item, toBuy, equilibriumPrice);
+          (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(bought, gnomeBuff.item);
 
-        if (bought !== toBuy) {
-          gnomeBuffs.splice(gnomeBuffs.indexOf(gnomeBuff), 1);
-        }
-      });
-    }
-
-    var digitizes = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sourceTerminalDigitizeUses");
-    var sausages = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sausageFights");
-    var votes = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_voteFreeFights");
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.outfit)("trick");
-
-    if (terminal) {
-      if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCounters)("Digitize", -11, 0) !== "") {
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("It's digitize time, ".concat((0,_lib__WEBPACK_IMPORTED_MODULE_2__.getRandFromArray)(_lib__WEBPACK_IMPORTED_MODULE_2__.funBuddyNames), "!"), "blue");
-        var digitizeMacro = libram__WEBPACK_IMPORTED_MODULE_3__.Macro.externalIf((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myAdventures)() * 1.1 < (3 - digitizes) * (5 * ((0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sourceTerminalDigitizeMonsterCount") * (1 + (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sourceTerminalDigitizeMonsterCount"))) - 3), libram__WEBPACK_IMPORTED_MODULE_3__.Macro.trySkill("digitize")).step(trickMacro);
-        freeFight(digitizeMacro, function () {
-          return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCounters)("Digitize", -11, 0) !== "";
+          if (bought !== toBuy) {
+            gnomeBuffs.splice(gnomeBuffs.indexOf(gnomeBuff), 1);
+          }
         });
       }
-    }
 
-    if (sausage) {
-      (function () {
-        var kramcoNumber = 5 + 3 * (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sausageFights") + Math.pow(Math.max(0, (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sausageFights") - 5), 3);
+      var digitizes = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sourceTerminalDigitizeUses");
+      var sausages = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sausageFights");
+      var votes = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_voteFreeFights");
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.outfit)("trick");
 
-        if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.totalTurnsPlayed)() - (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_lastSausageMonsterTurn") + 1 >= kramcoNumber) {
-          freeFight(trickMacro, function () {
-            return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.totalTurnsPlayed)() - (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_lastSausageMonsterTurn") + 1 >= kramcoNumber;
-          }, function () {
-            return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$slot)(_templateObject14()), kramco);
+      if (terminal) {
+        if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCounters)("Digitize", -11, 0) !== "") {
+          (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("It's digitize time, ".concat((0,_lib__WEBPACK_IMPORTED_MODULE_2__.getRandFromArray)(_lib__WEBPACK_IMPORTED_MODULE_2__.funBuddyNames), "!"), "blue");
+          var digitizeMacro = libram__WEBPACK_IMPORTED_MODULE_3__.Macro.externalIf((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myAdventures)() * 1.1 < (3 - digitizes) * (5 * ((0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sourceTerminalDigitizeMonsterCount") * (1 + (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sourceTerminalDigitizeMonsterCount"))) - 3), libram__WEBPACK_IMPORTED_MODULE_3__.Macro.trySkill("digitize")).step(trickMacro);
+          freeFight(digitizeMacro, function () {
+            return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCounters)("Digitize", -11, 0) !== "";
           });
         }
-      })();
-    }
+      }
 
-    if (voting) {
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("The first Tuesday in November approaches, which makes perfect sense given that it's October.", "blue");
+      if (sausage) {
+        (function () {
+          var kramcoNumber = 5 + 3 * (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sausageFights") + Math.pow(Math.max(0, (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sausageFights") - 5), 3);
 
-      if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCounters)("Vote", 0, 0) !== "" && (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_voteFreeFights") < 3) {
-        var voteMacro = libram__WEBPACK_IMPORTED_MODULE_3__.Macro.externalIf((0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_voteMonster") === (0,libram__WEBPACK_IMPORTED_MODULE_3__.$monster)(_templateObject15()), libram__WEBPACK_IMPORTED_MODULE_3__.Macro.skill("silent treatment")).step(trickMacro);
-        freeFight(voteMacro, function () {
-          return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCounters)("Vote", 0, 0) !== "" && (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_voteFreeFights") < 3;
-        }, function () {
-          return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$slot)(_templateObject16()), voteBadge);
+          if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.totalTurnsPlayed)() - (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_lastSausageMonsterTurn") + 1 >= kramcoNumber) {
+            freeFight(trickMacro, function () {
+              return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.totalTurnsPlayed)() - (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_lastSausageMonsterTurn") + 1 >= kramcoNumber;
+            }, function () {
+              return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$slot)(_templateObject14()), kramco);
+            });
+          }
+        })();
+      }
+
+      if (voting) {
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("The first Tuesday in November approaches, which makes perfect sense given that it's October.", "blue");
+
+        if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCounters)("Vote", 0, 0) !== "" && (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_voteFreeFights") < 3) {
+          var voteMacro = libram__WEBPACK_IMPORTED_MODULE_3__.Macro.externalIf((0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_voteMonster") === (0,libram__WEBPACK_IMPORTED_MODULE_3__.$monster)(_templateObject15()), libram__WEBPACK_IMPORTED_MODULE_3__.Macro.skill("silent treatment")).step(trickMacro);
+          freeFight(voteMacro, function () {
+            return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCounters)("Vote", 0, 0) !== "" && (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_voteFreeFights") < 3;
+          }, function () {
+            return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$slot)(_templateObject16()), voteBadge);
+          });
+        }
+      }
+
+      var ghosting = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questPAGhost") !== "unstarted";
+
+      if (ghost && ghosting && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myInebriety)() < (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.inebrietyLimit)()) {
+        var ghostLocation = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("ghostLocation") || (0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject17());
+
+        if (ghostLocation === (0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject18())) {
+          throw "Something went wrong with my ghosts. Dammit, Walter Peck!";
+        }
+
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Lonely rivers flow to the sea, to the sea. Time to wrastle a ghost.", "blue");
+
+        (function () {
+          return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$slot)(_templateObject19()), proton);
+        });
+
+        (0,_lib__WEBPACK_IMPORTED_MODULE_2__.advMacro)(ghostLocation, libram__WEBPACK_IMPORTED_MODULE_3__.Macro.skill("shoot ghost").skill("shoot ghost").skill("shoot ghost").skill("trap ghost"), function () {
+          return (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questPAGhost") !== "unstarted";
         });
       }
-    }
 
-    var ghosting = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questPAGhost") !== "unstarted";
-
-    if (ghost && ghosting) {
-      var ghostLocation = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("ghostLocation") || (0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject17());
-
-      if (ghostLocation === (0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject18())) {
-        throw "Something went wrong with my ghosts. Dammit, Walter Peck!";
+      if (digitizes !== (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sourceTerminalDigitizeUses") && !(votes !== (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_voteFreeFights") || sausages !== (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sausageFights") || ghosting !== ((0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questPAGhost") !== "unstarted"))) {
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Sorry ".concat((0,_lib__WEBPACK_IMPORTED_MODULE_2__.getRandFromArray)(_lib__WEBPACK_IMPORTED_MODULE_2__.funBuddyNames), ", we encountered a digitized monster but haven't initialized the counter yet!"), "red");
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Sorry if that red message freaked you out, we're all fine.", "grey");
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$familiar)(_templateObject20()));
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)(1, (0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject21()));
+        (0,_lib__WEBPACK_IMPORTED_MODULE_2__.advMacroAA)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject22()), libram__WEBPACK_IMPORTED_MODULE_3__.Macro.step("runaway"));
       }
 
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Lonely rivers flow to the sea, to the sea. Time to wrastle a ghost.", "blue");
+      trickTreat(trickFamiliar, trickMacro);
 
-      (function () {
-        return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$slot)(_templateObject19()), proton);
-      });
-
-      (0,_lib__WEBPACK_IMPORTED_MODULE_2__.advMacro)(ghostLocation, libram__WEBPACK_IMPORTED_MODULE_3__.Macro.skill("shoot ghost").skill("shoot ghost").skill("shoot ghost").skill("trap ghost"), function () {
-        return (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questPAGhost") !== "unstarted";
-      });
+      if (doingNemesis && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCounters)("Nemesis Assassin window end", -11, 0) !== "") {
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)(trickFamiliar);
+        (0,_lib__WEBPACK_IMPORTED_MODULE_2__.advMacroAA)((0,_lib__WEBPACK_IMPORTED_MODULE_2__.prepWandererZone)(), trickMacro);
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.outfit)("freefight stasis");
+        if ((0,libram__WEBPACK_IMPORTED_MODULE_3__.have)(bjorn)) (0,_lib__WEBPACK_IMPORTED_MODULE_2__.pickBjorn)();
+        if ((0,libram__WEBPACK_IMPORTED_MODULE_3__.have)(proton)) ghostCheck();
+      }
     }
-
-    if (digitizes !== (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sourceTerminalDigitizeUses") && !(votes !== (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_voteFreeFights") || sausages !== (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("_sausageFights") || ghosting !== ((0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questPAGhost") !== "unstarted"))) {
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Sorry ".concat((0,_lib__WEBPACK_IMPORTED_MODULE_2__.getRandFromArray)(_lib__WEBPACK_IMPORTED_MODULE_2__.funBuddyNames), ", we encountered a digitized monster but haven't initialized the counter yet!"), "red");
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Sorry if that red message freaked you out, we're all fine.", "grey");
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$familiar)(_templateObject20()));
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)(1, (0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject21()));
-      (0,_lib__WEBPACK_IMPORTED_MODULE_2__.advMacroAA)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject22()), libram__WEBPACK_IMPORTED_MODULE_3__.Macro.step("runaway"));
-    }
-
-    trickTreat(trickFamiliar, trickMacro);
-
-    if (doingNemesis && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCounters)("Nemesis Assassin window end", -11, 0) !== "") {
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)(trickFamiliar);
-      (0,_lib__WEBPACK_IMPORTED_MODULE_2__.advMacroAA)((0,_lib__WEBPACK_IMPORTED_MODULE_2__.prepWandererZone)(), trickMacro);
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.outfit)("freefight stasis");
-      if ((0,libram__WEBPACK_IMPORTED_MODULE_3__.have)(bjorn)) (0,_lib__WEBPACK_IMPORTED_MODULE_2__.pickBjorn)();
-      if ((0,libram__WEBPACK_IMPORTED_MODULE_3__.have)(proton)) ghostCheck();
-    }
+  } finally {
+    var endTime = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.gametimeToInt)();
+    var duration = endTime - startTime;
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("I spent ".concat(duration, " milliseconds!"), "blue");
   }
 }
 
