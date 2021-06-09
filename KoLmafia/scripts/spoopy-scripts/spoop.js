@@ -47916,9 +47916,8 @@ function treat() {
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("It's time to treat yourself (to the downfall of capitalism, ideally)", "blue");
   (0,libram__WEBPACK_IMPORTED_MODULE_3__.set)("choiceAdventure806", "1");
   prepareToTreat();
-  var treatBlock = block();
 
-  if (!treatBlock.includes("whichhouse=")) {
+  if (!block().includes("whichhouse=")) {
     if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myAdventures)() < 5) {
       throw "Need a new block and I'm all out of turns, baby!";
     } else {
@@ -47929,9 +47928,9 @@ function treat() {
   }
 
   for (var i = 0; i <= 11; i++) {
-    if (treatBlock.match(RegExp("whichhouse=".concat(i, ">[^>]*?house_l")))) {
+    if (block().match(RegExp("whichhouse=".concat(i, ">[^>]*?house_l")))) {
       var house = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)("choice.php?whichchoice=804&option=3&whichhouse=".concat(i, "&pwd"));
-      if (house.includes("A Fun-Size Dilemma")) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.runChoice)(-1);
+      if (house.includes("A Fun-Size Dilemma")) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.runChoice)(1);
     }
   }
 
@@ -48113,7 +48112,7 @@ function runBlocks() {
         return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$slot)(_templateObject19()), proton);
       });
 
-      (0,_lib__WEBPACK_IMPORTED_MODULE_2__.advMacro)(ghostLocation, libram__WEBPACK_IMPORTED_MODULE_3__.Macro.skill("shoot ghost").skill("shoot ghost").skill("trap ghost"), function () {
+      (0,_lib__WEBPACK_IMPORTED_MODULE_2__.advMacro)(ghostLocation, libram__WEBPACK_IMPORTED_MODULE_3__.Macro.skill("shoot ghost").skill("shoot ghost").skill("shoot ghost").skill("trap ghost"), function () {
         return (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questPAGhost") !== "unstarted";
       });
     }

@@ -65,8 +65,7 @@ function treat() {
     print("It's time to treat yourself (to the downfall of capitalism, ideally)", "blue");
     set("choiceAdventure806", "1");
     prepareToTreat();
-    const treatBlock = block();
-    if (!treatBlock.includes("whichhouse=")) {
+    if (!block().includes("whichhouse=")) {
         if (myAdventures() < 5) {
             throw "Need a new block and I'm all out of turns, baby!";
         } else {
@@ -75,9 +74,10 @@ function treat() {
         if (!block().includes("whichhouse=")) throw "Something went awry when finding a new block!";
     }
     for (let i = 0; i <= 11; i++) {
-        if (treatBlock.match(RegExp(`whichhouse=${i}>[^>]*?house_l`))) {
-            const house = visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
-            if (house.includes("A Fun-Size Dilemma")) runChoice(-1);
+        if (block().match(RegExp(`whichhouse=${i}>[^>]*?house_l`))) {
+            visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
+        } else if (block().match(RegExp(`whichhouse=${i}>[^>]*?starhouse`))) {
+            visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
         }
     }
     if (block().match(RegExp(`whichhouse=\l+>[^>]*?house_l`)))
@@ -281,7 +281,10 @@ export function runBlocks(blocks: number = -1) {
             () => equip($slot`back`, proton);
             advMacro(
                 ghostLocation,
-                Macro.skill("shoot ghost").skill("shoot ghost").skill("trap ghost"),
+                Macro.skill("shoot ghost")
+                    .skill("shoot ghost")
+                    .skill("shoot ghost")
+                    .skill("trap ghost"),
                 () => get("questPAGhost") !== "unstarted"
             );
         }
