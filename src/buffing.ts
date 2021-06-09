@@ -12,6 +12,7 @@ import {
     myFamiliar,
     numericModifier,
     outfit,
+    print,
     use,
     useFamiliar,
     weightAdjustment,
@@ -94,7 +95,8 @@ export function buffUp(turnZero: boolean = false) {
                         (1 - weight() / 1000) +
                         permanentWeightBuffs.map((buff) => buff.price).reduce((a, b) => a + b, 0) -
                         mpa);
-                const bought = buy(weightBuff.item, toBuy, equilibriumPrice);
+                print(`Trying to buy ${weightBuff.item.name} at ${equilibriumPrice}.`);
+                const bought = buy(toBuy, weightBuff.item, equilibriumPrice);
                 use(bought, weightBuff.item);
                 if (bought === toBuy) {
                     permanentWeightBuffs.push(weightBuff);
@@ -130,13 +132,9 @@ export function buffUp(turnZero: boolean = false) {
 
         weightBuffs.forEach((weightBuff) => {
             if (!have(weightBuff.effect)) {
-                if (
-                    buy(
-                        weightBuff.item,
-                        1,
-                        (trueMpa * weightBuff.value * turnZeroFreeFights) / 1000
-                    )
-                ) {
+                const equilibriumPrice = (trueMpa * weightBuff.value * turnZeroFreeFights) / 1000;
+                print(`Trying to buy ${weightBuff.item.name} at ${equilibriumPrice}.`);
+                if (buy(1, weightBuff.item, equilibriumPrice)) {
                     use(1, weightBuff.item);
                 }
             }

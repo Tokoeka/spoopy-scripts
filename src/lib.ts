@@ -116,7 +116,7 @@ export function prepWandererZone() {
                 cliExecute("make buttery boy");
             }
         } else {
-            let guzzlrBooze = get<Item>("guzzlrQuestBooze");
+            const guzzlrBooze = $item`${get("guzzlrQuestBooze")}`;
             if (!guzzlrBooze) {
                 freeFightZone = $location`The Deep Dark Jungle`;
             } else if (itemAmount(guzzlrBooze) === 0) {

@@ -275,7 +275,7 @@ export function freeFights() {
         cliExecute("fortune buff susie");
     }
 
-    if (!get("concertVisited")) {
+    if (!get("concertVisited") && get("sidequestArenaCompleted") === "fratboy") {
         cliExecute("concert winklered");
     }
 
@@ -518,6 +518,7 @@ export function freeFights() {
     }
 
     if (get("_backUpUses") < 11) {
+        outfit("freefight stasis");
         equip($slot`acc2`, $item`backup camera`);
         if (have($effect`eldritch attunement`)) {
             Macro.if_(
@@ -540,7 +541,7 @@ export function freeFights() {
         }
         restoreHp(myMaxhp());
         defaultMacro.setAutoAttack();
-        outfit("freefight stasis");
+
         visitUrl("campground.php?action=witchess");
         runChoice(1);
         visitUrl(
@@ -559,6 +560,9 @@ export function freeFights() {
             pickBjorn
         );
     }
+
+    defaultMacro.setAutoAttack();
+
     while (get("_witchessFights") < 4) {
         pickBjorn();
         visitUrl("campground.php?action=witchess");
@@ -611,21 +615,26 @@ export function freeFights() {
         setAutoAttack(0);
         equip($slot`off-hand`, $item`Kramco Sausage-o-Matic™`);
         restoreHp(myMaxhp());
-        const profMacro = Macro.skill($skill`curse of weaksauce`)
-            .externalIf(
-                !haveSkill($skill`Lecture on Relativity`) && get("_meteorShowerUses") === 0,
-                Macro.skill($skill`meteor shower`)
-            )
-            .skill($skill`extract`)
-            .skill($skill`sing along`)
-            .if_("(!hasskill 7319) && (hasskill 7316)", Macro.skill($skill`Deliver Your Thesis`))
-            .if_("hasskill 7319", Macro.skill($skill`Lecture on Relativity`))
-            .attack()
-            .repeat();
+        const profMacro = () => {
+            return Macro.skill($skill`curse of weaksauce`)
+                .externalIf(
+                    !haveSkill($skill`Lecture on Relativity`) && get("_meteorShowerUses") === 0,
+                    Macro.skill($skill`meteor shower`)
+                )
+                .skill($skill`extract`)
+                .skill($skill`sing along`)
+                .if_(
+                    "(!hasskill 7319) && (hasskill 7316)",
+                    Macro.skill($skill`Deliver Your Thesis`)
+                )
+                .if_("hasskill 7319", Macro.skill($skill`Lecture on Relativity`))
+                .attack()
+                .repeat();
+        };
         adv1(prepWandererZone(), -1, () => {
-            return profMacro.toString();
+            return profMacro().toString();
         });
-        while (inMultiFight()) runCombat(profMacro.toString());
+        while (inMultiFight()) runCombat(profMacro().toString());
 
         useFamiliar($familiar`reagnimated gnome`);
         outfit("freefight stasis");
