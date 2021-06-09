@@ -57,7 +57,7 @@ const treatOutfit = get<string>("spoopTreatOutfit") || "Eldritch Equipage";
 const tot = $familiar`trick-or-treating tot`;
 const prepareToTreat = () => {
     if (haveFamiliar(tot)) useFamiliar(tot);
-    cliExecute("/outfit none");
+    outfit("birthday suit");
     outfit(treatOutfit);
 };
 
@@ -75,10 +75,11 @@ function treat() {
         }
         if (!block().includes("whichhouse=")) throw "Something went awry when finding a new block!";
     }
+    const thisBlock = block();
     for (let i = 0; i <= 11; i++) {
-        if (block().match(RegExp(`whichhouse=${i}>[^>]*?house_l`))) {
+        if (thisBlock.match(RegExp(`whichhouse=${i}>[^>]*?house_l`))) {
             visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
-        } else if (block().match(RegExp(`whichhouse=${i}>[^>]*?starhouse`))) {
+        } else if (thisBlock.match(RegExp(`whichhouse=${i}>[^>]*?starhouse`))) {
             visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
             runChoice(2);
         }
@@ -101,8 +102,9 @@ function trick(trickFamiliar: Familiar, trickMacro: Macro) {
         }
         if (!block().includes("whichhouse=")) throw "Something went awry when finding a new block!";
     }
+    const thisBlock = block();
     for (let i = 0; i <= 11; i++) {
-        if (block().match(RegExp(`whichhouse=${i}>[^>]*?house_d`))) {
+        if (thisBlock.match(RegExp(`whichhouse=${i}>[^>]*?house_d`))) {
             visitUrl(`choice.php?whichchoice=804&option=3&whichhouse=${i}&pwd`);
             runCombat(trickMacro.toString());
             while (inMultiFight()) runCombat(trickMacro.toString());

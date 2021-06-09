@@ -44103,7 +44103,7 @@ function buffUp() {
       efficiency: (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.numericModifier)((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.effectModifier)(buffItem, "Effect"), "Familiar Weight") * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.numericModifier)(buffItem, "Effect Duration") / (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)(buffItem)
     };
   }).sort(function (a, b) {
-    return a.efficiency - b.efficiency;
+    return b.efficiency - a.efficiency;
   });
   var mpa = 1 / 25 * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject())) + 0.4 * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject2()));
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject3()));
@@ -44202,20 +44202,22 @@ function buffUp() {
     });
   }
 
-  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject9()));
-  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.maximize)("mp", false);
-  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("/cast * love song");
-
-  if (!(0,libram__WEBPACK_IMPORTED_MODULE_2__.get)("expressCardUsed")) {
-    (0,_lib__WEBPACK_IMPORTED_MODULE_1__.withStash)([(0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject10())], function () {
-      return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(1, (0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject11()));
-    });
+  if (!(0,libram__WEBPACK_IMPORTED_MODULE_2__.get)("expressCardUsed") || !(0,libram__WEBPACK_IMPORTED_MODULE_2__.get)("_licenseToChillUsed")) {
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject9()));
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.maximize)("mp", false);
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("/cast * love song");
-  }
 
-  if (!(0,libram__WEBPACK_IMPORTED_MODULE_2__.get)("_licenseToChillUsed")) {
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(1, (0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject12()));
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("/cast * love song");
+    if (!(0,libram__WEBPACK_IMPORTED_MODULE_2__.get)("expressCardUsed")) {
+      (0,_lib__WEBPACK_IMPORTED_MODULE_1__.withStash)([(0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject10())], function () {
+        return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(1, (0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject11()));
+      });
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("/cast * love song");
+    }
+
+    if (!(0,libram__WEBPACK_IMPORTED_MODULE_2__.get)("_licenseToChillUsed")) {
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(1, (0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject12()));
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("/cast * love song");
+    }
   }
 
   (0,_lib__WEBPACK_IMPORTED_MODULE_1__.withStash)([(0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject13())], function () {
@@ -47884,7 +47886,7 @@ var tot = (0,libram__WEBPACK_IMPORTED_MODULE_3__.$familiar)(_templateObject2());
 
 var prepareToTreat = function prepareToTreat() {
   if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveFamiliar)(tot)) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)(tot);
-  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("/outfit none");
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.outfit)("birthday suit");
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.outfit)(treatOutfit);
 };
 

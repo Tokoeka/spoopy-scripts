@@ -47,7 +47,7 @@ export function buffUp(turnZero: boolean = false) {
                     mallPrice(buffItem),
             };
         })
-        .sort((a, b) => a.efficiency - b.efficiency);
+        .sort((a, b) => b.efficiency - a.efficiency);
 
     const mpa =
         (1 / 25) * mallPrice($item`huge bowl of candy`) +
@@ -140,19 +140,20 @@ export function buffUp(turnZero: boolean = false) {
             }
         });
     }
-
-    useFamiliar($familiar`left-hand man`);
-    maximize("mp", false);
-    cliExecute("/cast * love song");
-    if (!get("expressCardUsed")) {
-        withStash([$item`platinum yendorian express card`], () =>
-            use(1, $item`platinum yendorian express card`)
-        );
+    if (!get("expressCardUsed") || !get("_licenseToChillUsed")) {
+        useFamiliar($familiar`left-hand man`);
+        maximize("mp", false);
         cliExecute("/cast * love song");
-    }
-    if (!get("_licenseToChillUsed")) {
-        use(1, $item`license to chill`);
-        cliExecute("/cast * love song");
+        if (!get("expressCardUsed")) {
+            withStash([$item`platinum yendorian express card`], () =>
+                use(1, $item`platinum yendorian express card`)
+            );
+            cliExecute("/cast * love song");
+        }
+        if (!get("_licenseToChillUsed")) {
+            use(1, $item`license to chill`);
+            cliExecute("/cast * love song");
+        }
     }
     withStash([$item`defective game grid token`], () => use(1, $item`defective game grid token`));
     return { permanentWeightBuffs, baseWeight };
