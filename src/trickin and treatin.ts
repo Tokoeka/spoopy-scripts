@@ -1,5 +1,6 @@
 import {
     buy,
+    cliExecute,
     equip,
     getCounters,
     handlingChoice,
@@ -56,6 +57,7 @@ const treatOutfit = get<string>("spoopTreatOutfit") || "Eldritch Equipage";
 const tot = $familiar`trick-or-treating tot`;
 const prepareToTreat = () => {
     if (haveFamiliar(tot)) useFamiliar(tot);
+    cliExecute("/outfit none");
     outfit(treatOutfit);
 };
 
@@ -181,10 +183,12 @@ export function runBlocks(blocks: number = -1) {
             ? -1
             : get("questG04Nemesis") === "started"
             ? 0
+            : get("questG04Nemesis") === "finished"
+            ? 69
             : parseInt(get("questG04Nemesis").substring(4), 10);
     const doingNemesis = nemesisStep() >= 17 && nemesisStep() < 25;
     const nemesis = () => {
-        return doingNemesis ? true : nemesisStep() < 25;
+        return !doingNemesis ? true : nemesisStep() < 25;
     };
     const buffs =
         trickFamiliar === $familiar`reagnimated gnome` ||

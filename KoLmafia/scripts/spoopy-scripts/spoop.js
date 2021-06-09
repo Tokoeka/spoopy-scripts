@@ -47884,6 +47884,7 @@ var tot = (0,libram__WEBPACK_IMPORTED_MODULE_3__.$familiar)(_templateObject2());
 
 var prepareToTreat = function prepareToTreat() {
   if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveFamiliar)(tot)) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)(tot);
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("/outfit none");
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.outfit)(treatOutfit);
 };
 
@@ -47987,13 +47988,13 @@ function runBlocks() {
   };
 
   var nemesisStep = function nemesisStep() {
-    return (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questG04Nemesis") === "unstarted" ? -1 : (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questG04Nemesis") === "started" ? 0 : parseInt((0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questG04Nemesis").substring(4), 10);
+    return (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questG04Nemesis") === "unstarted" ? -1 : (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questG04Nemesis") === "started" ? 0 : (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questG04Nemesis") === "finished" ? 69 : parseInt((0,libram__WEBPACK_IMPORTED_MODULE_3__.get)("questG04Nemesis").substring(4), 10);
   };
 
   var doingNemesis = nemesisStep() >= 17 && nemesisStep() < 25;
 
   var nemesis = function nemesis() {
-    return doingNemesis ? true : nemesisStep() < 25;
+    return !doingNemesis ? true : nemesisStep() < 25;
   };
 
   var buffs = trickFamiliar === (0,libram__WEBPACK_IMPORTED_MODULE_3__.$familiar)(_templateObject10()) || trickFamiliar === (0,libram__WEBPACK_IMPORTED_MODULE_3__.$familiar)(_templateObject11()) ? (0,_buffing__WEBPACK_IMPORTED_MODULE_1__.buffUp)() : {
