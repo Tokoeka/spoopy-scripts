@@ -20,7 +20,19 @@ import {
     retrieveItem,
     takeStash,
 } from "kolmafia";
-import { get, set, $item, $location, $items, have, $effect, $familiar, $slot, Macro } from "libram";
+import {
+    get,
+    set,
+    $item,
+    $location,
+    $items,
+    have,
+    $effect,
+    $familiar,
+    $slot,
+    Macro,
+    property,
+} from "libram";
 
 interface zonePotion {
     zone: String;
@@ -42,6 +54,11 @@ const zonePotions = [
 ];
 
 export function prepWandererZone() {
+    const defaultLocation =
+        get("_spookyAirportToday") || get("spookyAirportAlways")
+            ? $location`the deep dark jungle`
+            : $location`noob cave`;
+    if (!have($item`guzzlr tablet`)) return defaultLocation;
     if (get("questGuzzlr") === "unstarted") {
         if (
             get("_guzzlrPlatinumDeliveries") === 0 &&
@@ -92,9 +109,9 @@ export function prepWandererZone() {
         }
     }
 
-    let freeFightZone = $location`the deep dark jungle`;
+    let freeFightZone = defaultLocation;
     if (guzzlrCheck()) {
-        freeFightZone = get("guzzlrQuestLocation") || $location`the deep dark jungle`;
+        freeFightZone = get("guzzlrQuestLocation") || defaultLocation;
         if (get("guzzlrQuestTier") === "platinum") {
             zonePotions.forEach((place) => {
                 if (freeFightZone.zone === place.zone && haveEffect(place.effect) === 0) {
@@ -107,7 +124,7 @@ export function prepWandererZone() {
         }
     }
     if (freeFightZone === get("guzzlrQuestLocation")) {
-        if (get<string>("guzzlrQuestBooze") === "Guzzlr cocktail set") {
+        if (property.getString("guzzlrQuestBooze") === "Guzzlr cocktail set") {
             if (
                 !$items`buttery boy, steamboat, ghiaccio colada, nog-on-the-cob, sourfinger`.some(
                     (drink) => have(drink)
@@ -118,7 +135,7 @@ export function prepWandererZone() {
         } else {
             const guzzlrBooze = $item`${get("guzzlrQuestBooze")}`;
             if (!guzzlrBooze) {
-                freeFightZone = $location`The Deep Dark Jungle`;
+                freeFightZone = defaultLocation;
             } else if (itemAmount(guzzlrBooze) === 0) {
                 print(`just picking up some booze before we roll`, "blue");
                 cliExecute("acquire " + get("guzzlrQuestBooze"));
@@ -129,8 +146,25 @@ export function prepWandererZone() {
 }
 
 function guzzlrCheck() {
-    const guzzlZone = get("guzzlrQuestLocation") || $location`the deep dark jungle`;
-    const forbiddenZones = ["Dinseylandfill", "The Rabbit Hole", "Spring Break Beach"];
+    const guzzlZone = get("guzzlrQuestLocation");
+    if (!guzzlZone) return false;
+    const forbiddenZones: String[] = ["The Rabbit Hole"]; //can't stockpile these potions,
+    if (!get("_spookyAirportToday") && !get("spookyAirportAlways")) {
+        forbiddenZones.push("Conspiracy Island");
+    }
+    if (!get("_stenchAirportToday") && !get("stenchAirportAlways")) {
+        forbiddenZones.push("Dinseylandfill");
+    }
+    if (!get("_hotAirportToday") && !get("hotAirportAlways")) {
+        forbiddenZones.push("That 70s Volcano");
+    }
+    if (!get("_coldAirportToday") && !get("coldAirportAlways")) {
+        forbiddenZones.push("The Glaciest");
+    }
+    if (!get("_sleazeAirportToday") && !get("sleazeAirportAlways")) {
+        forbiddenZones.push("Spring Break Beach");
+    }
+
     zonePotions.forEach((place) => {
         if (guzzlZone.zone === place.zone && haveEffect(place.effect) === 0) {
             if (availableAmount(place.potion) === 0) {
