@@ -275,21 +275,24 @@ export function pickBjorn() {
 
 export function advMacroAA(
     location: Location,
-    macro: Macro,
+    macro: Macro | (() => Macro),
     parameter: number | (() => boolean) = 1,
-    afterCombatAction?: () => void,
-    resetMacro: boolean = false
+    afterCombatAction?: () => void
 ) {
     let n = 0;
     const condition = () => {
         return typeof parameter === "number" ? n < parameter : parameter();
     };
+    const isFunc = typeof macro === "function";
+    const macroFunc = () => {
+        return typeof macro === "function" ? macro() : macro;
+    };
     const macroText = macro.toString();
-    macro.setAutoAttack();
+    macroFunc().setAutoAttack();
     while (condition()) {
-        if (resetMacro) macro.setAutoAttack();
+        if (isFunc) macroFunc().setAutoAttack();
         adv1(location, -1, (round: number, foe: Monster, text: string) => {
-            return resetMacro ? macro.toString() : macroText;
+            return isFunc ? macroFunc().toString() : macroText;
         });
         if (afterCombatAction) afterCombatAction();
         n++;
@@ -298,7 +301,7 @@ export function advMacroAA(
 
 export function advMacro(
     location: Location,
-    macro: Macro,
+    macro: Macro | (() => Macro),
     parameter: number | (() => boolean) = 1,
     afterCombatAction?: () => void
 ) {
@@ -307,10 +310,12 @@ export function advMacro(
     const condition = () => {
         return typeof parameter === "number" ? n < parameter : parameter();
     };
+    const macroFunc = () => {
+        return typeof macro === "function" ? macro() : macro;
+    };
     while (condition()) {
-        const macroText = macro.toString();
         adv1(location, -1, () => {
-            return macroText;
+            return macroFunc().toString();
         });
         if (afterCombatAction) afterCombatAction();
         n++;
